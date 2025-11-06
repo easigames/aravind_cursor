@@ -65,23 +65,23 @@ export default function Services() {
   ];
 
   return (
-    <section id="services" className={`py-20 relative overflow-hidden ${themeClasses.bgPrimary}`}>
+    <section id="services" className={`py-12 sm:py-16 md:py-20 relative overflow-hidden ${themeClasses.bgPrimary}`}>
       {/* Background Gradient */}
       <div className={`absolute inset-0 ${themeClasses.bgGradient} pointer-events-none`}></div>
       
-      <div className="container mx-auto px-6 relative z-10">
+      <div className="container mx-auto px-4 sm:px-6 relative z-10">
         {/* Section Header */}
-        <div className="text-center max-w-3xl mx-auto mb-16">
-          <h2 className={`text-4xl md:text-5xl font-bold ${themeClasses.textPrimary} mb-4`}>
+        <div className="text-center max-w-3xl mx-auto mb-8 sm:mb-12 md:mb-16">
+          <h2 className={`text-3xl sm:text-4xl md:text-5xl font-bold ${themeClasses.textPrimary} mb-3 sm:mb-4`}>
             Our Services
           </h2>
-          <p className={`text-xl ${themeClasses.textSecondary}`}>
+          <p className={`text-base sm:text-lg md:text-xl ${themeClasses.textSecondary} px-4`}>
             Creator-focused editing services designed to boost engagement and crush the algorithm
           </p>
         </div>
 
         {/* Services Grid */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
           {services.map((service, index) => {
             // Calculate neighbor relationship
             const isHovered = hoveredIndex === index;

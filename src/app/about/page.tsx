@@ -11,25 +11,25 @@ export default function AboutPage() {
   return (
     <div className={`min-h-screen ${themeClasses.bgPrimary}`}>
       <Header />
-      <div className="pt-20 animate-fade-in-up">
+      <div className="pt-16 sm:pt-20 animate-fade-in-up">
         {/* About Us Section */}
-        <section className={`py-20 relative overflow-hidden ${themeClasses.bgPrimary}`}>
+        <section className={`py-12 sm:py-16 md:py-20 relative overflow-hidden ${themeClasses.bgPrimary}`}>
           <div className={`absolute inset-0 ${themeClasses.bgGradient} pointer-events-none`}></div>
           
-          <div className="container mx-auto px-6 relative z-10">
+          <div className="container mx-auto px-4 sm:px-6 relative z-10">
             {/* Section Header */}
-            <div className="text-center max-w-3xl mx-auto mb-16">
-              <h2 className={`text-4xl md:text-5xl font-bold ${themeClasses.textPrimary} mb-4`}>
+            <div className="text-center max-w-3xl mx-auto mb-8 sm:mb-12 md:mb-16">
+              <h2 className={`text-3xl sm:text-4xl md:text-5xl font-bold ${themeClasses.textPrimary} mb-3 sm:mb-4`}>
                 About Us
               </h2>
-              <p className={`text-xl ${themeClasses.textSecondary}`}>
+              <p className={`text-base sm:text-lg md:text-xl ${themeClasses.textSecondary} px-4`}>
                 Your trusted partner in creating viral-worthy content
               </p>
             </div>
 
             {/* About Content */}
             <div className="max-w-4xl mx-auto">
-              <div className="grid md:grid-cols-2 gap-12 mb-16">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 sm:gap-12 mb-12 sm:mb-16">
                 <div className="space-y-6">
                   <h3 className={`text-2xl font-bold ${themeClasses.textPrimary}`}>Our Mission</h3>
                   <p className={`${themeClasses.textSecondary} leading-relaxed`}>
@@ -74,7 +74,7 @@ export default function AboutPage() {
               </div>
 
               {/* Stats */}
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-16">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 mb-12 sm:mb-16">
                 <div className={`text-center p-6 ${themeClasses.cardBg} ${themeClasses.cardBorder} border rounded-xl`}>
                   <div className={`text-4xl font-bold ${themeClasses.gradientText} mb-2`}>500+</div>
                   <div className={`${themeClasses.textSecondary} text-sm`}>Videos Edited</div>

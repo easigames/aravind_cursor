@@ -79,10 +79,10 @@ export default function Hero() {
         ))}
       </div>
 
-      <div className="container mx-auto px-6 py-8 relative z-10">
-        <div className="grid lg:grid-cols-2 gap-8 items-center">
+      <div className="container mx-auto px-4 sm:px-6 py-6 sm:py-8 relative z-10">
+        <div className="grid lg:grid-cols-2 gap-6 lg:gap-8 items-center">
           {/* Left Content */}
-          <div className="max-w-xl flex flex-col justify-center">
+          <div className="max-w-xl flex flex-col justify-center text-center lg:text-left">
           {/* Badge */}
           <div className="relative mb-6 animate-fade-in">
             <div className={`inline-flex items-center px-4 py-2 ${themeClasses.cardBg} border ${themeClasses.cardBorder} ${themeClasses.shadowHover} text-xs font-semibold ${themeClasses.textPrimary} transform hover:scale-105 transition-all duration-300`}>
@@ -103,7 +103,7 @@ export default function Hero() {
           </div>
 
           {/* Main Heading */}
-          <h1 className={`text-3xl md:text-5xl lg:text-6xl font-bold ${themeClasses.heroText} mb-4 leading-tight animate-fade-in-up`}>
+          <h1 className={`text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-bold ${themeClasses.heroText} mb-3 sm:mb-4 leading-tight animate-fade-in-up`}>
             Crush the Algorithm.
             <span className={`block ${themeClasses.gradientText}`}>
               Grow Your Audience.
@@ -111,12 +111,12 @@ export default function Hero() {
           </h1>
 
           {/* Subheading */}
-          <p className={`text-base md:text-lg ${themeClasses.heroSubtext} mb-6 animate-fade-in-up animation-delay-200`}>
+          <p className={`text-sm sm:text-base md:text-lg ${themeClasses.heroSubtext} mb-4 sm:mb-6 animate-fade-in-up animation-delay-200`}>
             High-energy edits designed to hook viewers in 3 seconds. Algorithm-crushing short-form videos for TikTok, Reels & Shorts.
           </p>
 
           {/* CTA Buttons */}
-          <div className="flex flex-col sm:flex-row gap-2.5 mb-6 animate-fade-in-up animation-delay-400">
+          <div className="flex flex-col sm:flex-row gap-2 sm:gap-2.5 mb-4 sm:mb-6 animate-fade-in-up animation-delay-400 items-center lg:items-start">
             <Link
               href="/contact"
               className={`group relative px-6 py-2.5 rounded-full text-sm font-semibold overflow-hidden transition-all duration-300 hover:scale-105 ${themeClasses.shadowPurple} flex items-center justify-center ${themeClasses.buttonPrimary}`}
@@ -168,7 +168,7 @@ export default function Hero() {
           </div>
 
           {/* Video Editing Creative Elements */}
-          <div className="flex flex-wrap gap-2 animate-fade-in-up animation-delay-600">
+          <div className="flex flex-wrap gap-2 animate-fade-in-up animation-delay-600 justify-center lg:justify-start">
             <div className={`flex items-center gap-1.5 px-3 py-1.5 ${themeClasses.badgePurple} border rounded-lg`}>
               <svg className="w-3.5 h-3.5 text-purple-400" fill="currentColor" viewBox="0 0 20 20">
                 <path d="M2 6a2 2 0 012-2h6a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6zM14.553 7.106A1 1 0 0014 8v4a1 1 0 00.553.894l2 1A1 1 0 0018 13V7a1 1 0 00-1.447-.894l-2 1z" />
@@ -191,7 +191,7 @@ export default function Hero() {
           </div>
 
           {/* Right Video Demo Section */}
-          <div className="relative lg:block hidden animate-fade-in-up animation-delay-400">
+          <div className="relative hidden lg:block animate-fade-in-up animation-delay-400">
             {/* Video Container with Film Frame Effect */}
             <div className="relative max-w-sm mx-auto">
               {/* Film Frame Border */}

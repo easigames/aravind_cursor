@@ -12,7 +12,7 @@ export default function PricingPage() {
   return (
     <div className={`min-h-screen ${themeClasses.bgPrimary}`}>
       <Header />
-      <div className="pt-20 animate-fade-in-up">
+      <div className="pt-16 sm:pt-20 animate-fade-in-up">
         <HowItWorks />
         <BookCall />
       </div>

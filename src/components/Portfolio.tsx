@@ -118,19 +118,19 @@ export default function Portfolio() {
         </div>
       </div>
 
-      <div className="container mx-auto px-6 relative z-10">
+      <div className="container mx-auto px-4 sm:px-6 relative z-10">
         {/* Section Header */}
-        <div className="text-center max-w-3xl mx-auto mb-12">
-          <h2 className={`text-4xl md:text-5xl font-bold ${themeClasses.textPrimary} mb-4`}>
+        <div className="text-center max-w-3xl mx-auto mb-8 sm:mb-12">
+          <h2 className={`text-3xl sm:text-4xl md:text-5xl font-bold ${themeClasses.textPrimary} mb-3 sm:mb-4`}>
             Our Portfolio
           </h2>
-          <p className={`text-xl ${themeClasses.textSecondary}`}>
+          <p className={`text-base sm:text-lg md:text-xl ${themeClasses.textSecondary} px-4`}>
             Explore our latest video editing projects and creative work
           </p>
         </div>
 
         {/* Pinterest-style Masonry Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 auto-rows-[280px] gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 auto-rows-[200px] sm:auto-rows-[240px] md:auto-rows-[280px] gap-3 sm:gap-4">
           {projects.map((project, index) => {
             const isVisible = visibleItems.has(index);
             const aspectClass = getAspectRatioClass(project.aspectRatio);

@@ -129,20 +129,20 @@ export default function Home() {
       <Hero />
       
       {/* Key Features Section */}
-      <section ref={sectionRef} className={`py-20 relative overflow-hidden ${themeClasses.bgPrimary}`}>
+      <section ref={sectionRef} className={`py-12 sm:py-16 md:py-20 relative overflow-hidden ${themeClasses.bgPrimary}`}>
         <div className={`absolute inset-0 ${themeClasses.bgGradient} pointer-events-none`}></div>
         
-        <div className="container mx-auto px-6 relative z-10">
-          <div className="text-center max-w-3xl mx-auto mb-16">
-            <h2 className={`text-4xl md:text-5xl font-bold ${themeClasses.textPrimary} mb-4`}>
+        <div className="container mx-auto px-4 sm:px-6 relative z-10">
+          <div className="text-center max-w-3xl mx-auto mb-8 sm:mb-12 md:mb-16">
+            <h2 className={`text-3xl sm:text-4xl md:text-5xl font-bold ${themeClasses.textPrimary} mb-3 sm:mb-4`}>
               Why Choose ArvindLuxEdit?
             </h2>
-            <p className={`text-xl ${themeClasses.textSecondary}`}>
+            <p className={`text-base sm:text-lg md:text-xl ${themeClasses.textSecondary}`}>
               We're not just editors—we're your growth partners
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-12 sm:mb-16">
             {features.map((feature, index) => {
               const isVisible = visibleCards.has(index);
               const slideDirection = feature.row === 'top' ? '-translate-y-20' : 'translate-y-20';
@@ -194,13 +194,13 @@ export default function Home() {
 
           {/* CTA Section */}
           <div className="text-center">
-            <h3 className={`text-3xl font-bold ${themeClasses.textPrimary} mb-6`}>
+            <h3 className={`text-2xl sm:text-3xl font-bold ${themeClasses.textPrimary} mb-4 sm:mb-6`}>
               Ready to Transform Your Content?
             </h3>
-            <p className={`text-xl ${themeClasses.textSecondary} mb-8 max-w-2xl mx-auto`}>
+            <p className={`text-base sm:text-lg md:text-xl ${themeClasses.textSecondary} mb-6 sm:mb-8 max-w-2xl mx-auto px-4`}>
               Join hundreds of creators who are crushing it with our editing services
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center">
               <Link
                 href="/services"
                 className={`px-6 py-3 rounded-full font-semibold inline-block text-center transition-all duration-300 hover:scale-105 ${themeClasses.buttonPrimary}`}

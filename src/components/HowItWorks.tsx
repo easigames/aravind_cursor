@@ -97,7 +97,7 @@ export default function HowItWorks() {
     <section 
       ref={sectionRef}
       id="how-it-works" 
-      className={`py-20 relative ${themeClasses.bgPrimary}`}
+      className={`py-12 sm:py-16 md:py-20 relative ${themeClasses.bgPrimary}`}
       style={{ minHeight: `${steps.length * 60}vh` }}
     >
       {/* Background Elements */}
@@ -106,13 +106,13 @@ export default function HowItWorks() {
         <div className={`absolute bottom-0 left-0 w-full h-64 bg-gradient-to-t ${themeClasses.bgPrimary} to-transparent`}></div>
       </div>
 
-      <div className="container mx-auto px-6 relative z-10">
+      <div className="container mx-auto px-4 sm:px-6 relative z-10">
         {/* Section Header - Fixed at top */}
-        <div className="text-center max-w-3xl mx-auto mb-16 pt-8">
-          <h2 className={`text-4xl md:text-5xl font-bold ${themeClasses.textPrimary} mb-4`}>
+        <div className="text-center max-w-3xl mx-auto mb-12 sm:mb-16 pt-6 sm:pt-8">
+          <h2 className={`text-3xl sm:text-4xl md:text-5xl font-bold ${themeClasses.textPrimary} mb-3 sm:mb-4`}>
             How It Works
           </h2>
-          <p className={`text-xl ${themeClasses.textSecondary}`}>
+          <p className={`text-base sm:text-lg md:text-xl ${themeClasses.textSecondary} px-4`}>
             From upload to viral—our simple 5-step process gets you results fast
           </p>
         </div>
