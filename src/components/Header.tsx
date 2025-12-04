@@ -25,7 +25,7 @@ export default function Header() {
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === 'Escape') setIsMenuOpen(false);
     };
-    
+
     const handleClickOutside = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
       if (isMenuOpen && !target.closest('nav')) {
@@ -65,12 +65,11 @@ export default function Header() {
   };
 
   return (
-    <header 
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        isScrolled 
-          ? `${themeClasses.headerScrolled} ${themeClasses.shadow}` 
+    <header
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled
+          ? `${themeClasses.headerScrolled} ${themeClasses.shadow}`
           : 'bg-transparent'
-      }`}
+        }`}
     >
       <nav className="container mx-auto px-4 sm:px-6 py-3">
         <div className="flex items-center justify-between">
@@ -86,35 +85,33 @@ export default function Header() {
             </div>
             <div className="flex flex-col">
               <span className="text-base sm:text-xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
-                ArvindLuxEdit
+                ArvEdit
               </span>
               <span className="text-[9px] sm:text-[10px] text-gray-500 -mt-1 tracking-wider hidden xs:block">CREATIVE STUDIO</span>
             </div>
           </Link>
 
           {/* Desktop Navigation - Creative Tab Style */}
-          <div className={`hidden lg:flex items-center transition-all duration-300 ${
-            isScrolled 
+          <div className={`hidden lg:flex items-center transition-all duration-300 ${isScrolled
               ? `${themeClasses.glassEffectDark} ${themeClasses.borderLight}`
               : `${themeClasses.glassEffect} ${themeClasses.border}`
-          } rounded-full px-2 py-2 border`}>
+            } rounded-full px-2 py-2 border`}>
             {navItems.map((item) => {
               const isActive = isActiveTab(item.href);
               return (
                 <Link
                   key={item.id}
                   href={item.href}
-                  className={`relative px-5 py-2.5 rounded-full transition-all duration-500 ease-out ${
-                    isActive
+                  className={`relative px-5 py-2.5 rounded-full transition-all duration-500 ease-out ${isActive
                       ? themeClasses.textWhite
                       : `${themeClasses.headerTextSecondary} hover:${themeClasses.textPrimary}`
-                  }`}
+                    }`}
                 >
                   {/* Active Tab Background */}
                   {isActive && (
                     <div className={`absolute inset-0 rounded-full ${themeClasses.gradient} ${themeClasses.shadowPurple} animate-slide-in`}></div>
                   )}
-                  
+
                   {/* Content */}
                   <span className="text-sm font-semibold whitespace-nowrap relative z-10">
                     {item.name}
@@ -129,11 +126,10 @@ export default function Header() {
             <ThemeToggle />
             <Link
               href="/contact"
-              className={`group relative px-6 py-3 rounded-full font-semibold text-sm overflow-hidden transition-all duration-300 hover:scale-105 ${
-                isScrolled
+              className={`group relative px-6 py-3 rounded-full font-semibold text-sm overflow-hidden transition-all duration-300 hover:scale-105 ${isScrolled
                   ? `${themeClasses.buttonPrimary} ${themeClasses.shadowPurple}`
                   : themeClasses.buttonSecondary
-              }`}
+                }`}
             >
               <div className="relative flex items-center space-x-2">
                 <svg className="w-5 h-5 group-hover:scale-110 transition-transform" fill="currentColor" viewBox="0 0 20 20">
@@ -151,38 +147,33 @@ export default function Header() {
               onClick={() => setIsMenuOpen(!isMenuOpen)}
               aria-label="Toggle menu"
               aria-expanded={isMenuOpen}
-              className={`relative w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-300 cursor-pointer hover:scale-105 active:scale-95 ${
-                isScrolled
+              className={`relative w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-300 cursor-pointer hover:scale-105 active:scale-95 ${isScrolled
                   ? `${themeClasses.cardBg} ${themeClasses.cardHoverBg}`
                   : `${themeClasses.glassEffect} ${themeClasses.border} border`
-              }`}
+                }`}
             >
-            <div className="relative w-5 h-4 flex flex-col justify-between">
-              <span
-                className={`w-full h-0.5 rounded-full transition-all duration-300 ${
-                  isMenuOpen ? 'bg-purple-600' : isScrolled ? 'bg-purple-600' : 'bg-gray-600 dark:bg-gray-300'
-                } ${isMenuOpen ? 'rotate-45 translate-y-1.5' : ''}`}
-              ></span>
-              <span
-                className={`w-full h-0.5 rounded-full transition-all duration-300 ${
-                  isMenuOpen ? 'bg-purple-600' : isScrolled ? 'bg-purple-600' : 'bg-gray-600 dark:bg-gray-300'
-                } ${isMenuOpen ? 'opacity-0' : ''}`}
-              ></span>
-              <span
-                className={`w-full h-0.5 rounded-full transition-all duration-300 ${
-                  isMenuOpen ? 'bg-purple-600' : isScrolled ? 'bg-purple-600' : 'bg-gray-600 dark:bg-gray-300'
-                } ${isMenuOpen ? '-rotate-45 -translate-y-1.5' : ''}`}
-              ></span>
-            </div>
+              <div className="relative w-5 h-4 flex flex-col justify-between">
+                <span
+                  className={`w-full h-0.5 rounded-full transition-all duration-300 ${isMenuOpen ? 'bg-purple-600' : isScrolled ? 'bg-purple-600' : 'bg-gray-600 dark:bg-gray-300'
+                    } ${isMenuOpen ? 'rotate-45 translate-y-1.5' : ''}`}
+                ></span>
+                <span
+                  className={`w-full h-0.5 rounded-full transition-all duration-300 ${isMenuOpen ? 'bg-purple-600' : isScrolled ? 'bg-purple-600' : 'bg-gray-600 dark:bg-gray-300'
+                    } ${isMenuOpen ? 'opacity-0' : ''}`}
+                ></span>
+                <span
+                  className={`w-full h-0.5 rounded-full transition-all duration-300 ${isMenuOpen ? 'bg-purple-600' : isScrolled ? 'bg-purple-600' : 'bg-gray-600 dark:bg-gray-300'
+                    } ${isMenuOpen ? '-rotate-45 -translate-y-1.5' : ''}`}
+                ></span>
+              </div>
             </button>
           </div>
         </div>
 
         {/* Mobile Menu - Creative Design with Slide Animation */}
-        <div 
-          className={`lg:hidden overflow-hidden transition-all duration-500 ease-in-out ${
-            isMenuOpen ? 'max-h-[500px] opacity-100 mt-4' : 'max-h-0 opacity-0'
-          }`}
+        <div
+          className={`lg:hidden overflow-hidden transition-all duration-500 ease-in-out ${isMenuOpen ? 'max-h-[500px] opacity-100 mt-4' : 'max-h-0 opacity-0'
+            }`}
         >
           <div className={`pb-4 space-y-2 rounded-2xl ${themeClasses.glassEffectDark} ${themeClasses.shadow} p-3`}>
             {navItems.map((item, index) => {
@@ -191,11 +182,10 @@ export default function Header() {
                 <Link
                   key={item.id}
                   href={item.href}
-                  className={`relative flex items-center px-4 py-3 rounded-xl transition-all duration-300 ease-out overflow-hidden active:scale-95 ${
-                    isActive
+                  className={`relative flex items-center px-4 py-3 rounded-xl transition-all duration-300 ease-out overflow-hidden active:scale-95 ${isActive
                       ? `${themeClasses.textWhite} shadow-lg`
                       : `${themeClasses.headerTextSecondary} hover:${themeClasses.textPrimary}`
-                  }`}
+                    }`}
                   onClick={() => setIsMenuOpen(false)}
                   style={{
                     transitionDelay: isMenuOpen ? `${index * 50}ms` : '0ms'
@@ -204,19 +194,19 @@ export default function Header() {
                   {isActive && (
                     <div className={`absolute inset-0 ${themeClasses.gradient} rounded-xl`}></div>
                   )}
-                  
+
                   {/* Icon indicator for active item */}
                   {isActive && (
                     <div className="absolute left-2 w-1 h-6 bg-white/50 rounded-full"></div>
                   )}
-                  
+
                   <span className="text-sm font-semibold relative z-10 flex-1">{item.name}</span>
-                  
+
                   {/* Arrow for navigation */}
-                  <svg 
-                    className={`w-4 h-4 relative z-10 transition-transform ${isActive ? 'text-white' : 'text-gray-400'}`} 
-                    fill="none" 
-                    stroke="currentColor" 
+                  <svg
+                    className={`w-4 h-4 relative z-10 transition-transform ${isActive ? 'text-white' : 'text-gray-400'}`}
+                    fill="none"
+                    stroke="currentColor"
                     viewBox="0 0 24 24"
                   >
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -224,10 +214,10 @@ export default function Header() {
                 </Link>
               );
             })}
-            
+
             {/* Divider */}
             <div className={`h-px ${themeClasses.border} my-2`}></div>
-            
+
             {/* CTA Button */}
             <Link
               href="/contact"

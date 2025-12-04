@@ -1,4 +1,4 @@
-# Quick Start Guide - ArvindLuxEdit Website
+# Quick Start Guide - ArvEdit Website
 
 ## 🚀 Get Started in 3 Minutes
 
@@ -23,7 +23,7 @@ Navigate to [http://localhost:3000](http://localhost:3000)
 
 **Logo & Company Name**
 - File: `src/components/Header.tsx`
-- Line 14-16: Change "ArvindLuxEdit" to your company name
+- Line 14-16: Change "ArvEdit" to your company name
 - File: `src/components/Footer.tsx`
 - Line 13-15: Update footer branding
 

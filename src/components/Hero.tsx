@@ -1,11 +1,31 @@
 'use client';
 
 import Link from 'next/link';
+import { useState, useEffect } from 'react';
 import { useTheme } from './ThemeProvider';
+
+interface FloatPosition {
+  left: number;
+  top: number;
+  duration: number;
+}
 
 export default function Hero() {
   const { themeClasses } = useTheme();
-  
+  const [floatPositions, setFloatPositions] = useState<FloatPosition[]>([]);
+  const [isClient, setIsClient] = useState(false);
+
+  // Generate random positions only on client side to avoid hydration mismatch
+  useEffect(() => {
+    setIsClient(true);
+    const positions: FloatPosition[] = Array.from({ length: 8 }, () => ({
+      left: Math.random() * 100,
+      top: Math.random() * 100,
+      duration: 8 + Math.random() * 4,
+    }));
+    setFloatPositions(positions);
+  }, []);
+
   return (
     <section className={`relative min-h-[85vh] flex items-center overflow-hidden pt-24 pb-12 ${themeClasses.bgPrimary}`}>
       {/* Dynamic Gradient Background */}
@@ -60,173 +80,175 @@ export default function Hero() {
       </div>
 
       {/* Play Button Icons Floating */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-5">
-        {[...Array(8)].map((_, i) => (
-          <div
-            key={i}
-            className="absolute animate-float"
-            style={{
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
-              animationDelay: `${i * 0.5}s`,
-              animationDuration: `${8 + Math.random() * 4}s`,
-            }}
-          >
-            <svg className="w-12 h-12 text-purple-500" fill="currentColor" viewBox="0 0 20 20">
-              <path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z" />
-            </svg>
-          </div>
-        ))}
-      </div>
+      {isClient && (
+        <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-5">
+          {floatPositions.map((pos, i) => (
+            <div
+              key={i}
+              className="absolute animate-float"
+              style={{
+                left: `${pos.left}%`,
+                top: `${pos.top}%`,
+                animationDelay: `${i * 0.5}s`,
+                animationDuration: `${pos.duration}s`,
+              }}
+            >
+              <svg className="w-12 h-12 text-purple-500" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z" />
+              </svg>
+            </div>
+          ))}
+        </div>
+      )}
 
       <div className="container mx-auto px-4 sm:px-6 py-6 sm:py-8 relative z-10">
         <div className="grid lg:grid-cols-2 gap-6 lg:gap-8 items-center">
           {/* Left Content */}
           <div className="max-w-xl flex flex-col justify-center text-center lg:text-left">
-          {/* Badge */}
-          <div className="relative mb-6 animate-fade-in">
-            <div className={`inline-flex items-center px-4 py-2 ${themeClasses.cardBg} border ${themeClasses.cardBorder} ${themeClasses.shadowHover} text-xs font-semibold ${themeClasses.textPrimary} transform hover:scale-105 transition-all duration-300`}>
-              <div className="flex items-center space-x-2">
-                <div className="relative">
-                  <div className="w-2 h-2 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full animate-pulse"></div>
-                  <div className="absolute inset-0 w-2 h-2 bg-gradient-to-r from-purple-400 to-blue-400 rounded-full animate-ping opacity-75"></div>
+            {/* Badge */}
+            <div className="relative mb-6 animate-fade-in">
+              <div className={`inline-flex items-center px-4 py-2 ${themeClasses.cardBg} border ${themeClasses.cardBorder} ${themeClasses.shadowHover} text-xs font-semibold ${themeClasses.textPrimary} transform hover:scale-105 transition-all duration-300`}>
+                <div className="flex items-center space-x-2">
+                  <div className="relative">
+                    <div className="w-2 h-2 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full animate-pulse"></div>
+                    <div className="absolute inset-0 w-2 h-2 bg-gradient-to-r from-purple-400 to-blue-400 rounded-full animate-ping opacity-75"></div>
+                  </div>
+                  <span className="tracking-wide">CREATOR-FOCUSED EDITING</span>
+                  <svg className="w-3 h-3 ml-1 text-purple-500" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                  </svg>
                 </div>
-                <span className="tracking-wide">CREATOR-FOCUSED EDITING</span>
-                <svg className="w-3 h-3 ml-1 text-purple-500" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+              </div>
+              {/* Decorative elements */}
+              <div className="absolute -top-1 -left-1 w-3 h-3 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full opacity-60"></div>
+              <div className="absolute -bottom-1 -right-1 w-2 h-2 bg-gradient-to-r from-blue-500 to-pink-500 rounded-full opacity-40"></div>
+            </div>
+
+            {/* Main Heading */}
+            <h1 className={`text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-bold ${themeClasses.heroText} mb-3 sm:mb-4 leading-tight animate-fade-in-up`}>
+              Edits That Make People Watch. 🎬
+              <span className={`block ${themeClasses.gradientText}`}>
+                Turn Views Into Followers. 👥
+              </span>
+            </h1>
+
+            {/* Subheading */}
+            <p className={`text-sm sm:text-base md:text-lg ${themeClasses.heroSubtext} mb-4 sm:mb-6 animate-fade-in-up animation-delay-200`}>
+              High-energy edits designed to hook viewers in 3 seconds. Algorithm-crushing short-form videos for TikTok, Reels & Shorts.
+            </p>
+
+            {/* CTA Buttons */}
+            <div className="flex flex-col sm:flex-row gap-2 sm:gap-2.5 mb-4 sm:mb-6 animate-fade-in-up animation-delay-400 items-center lg:items-start">
+              <Link
+                href="/contact"
+                className={`group relative px-6 py-2.5 rounded-full text-sm font-semibold overflow-hidden transition-all duration-300 hover:scale-105 ${themeClasses.shadowPurple} flex items-center justify-center ${themeClasses.buttonPrimary}`}
+              >
+                <span className={`relative ${themeClasses.textWhite} flex items-center`}>
+                  Start Your Project
+                  <svg
+                    className="w-3.5 h-3.5 ml-2 group-hover:translate-x-1 transition-transform"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M17 8l4 4m0 0l-4 4m4-4H3"
+                    />
+                  </svg>
+                </span>
+              </Link>
+              <Link
+                href="/pricing"
+                className={`group relative px-6 py-2.5 rounded-full text-sm font-semibold transition-all duration-300 hover:scale-105 overflow-hidden bg-gradient-to-r from-green-600 to-emerald-600 text-white hover:from-green-700 hover:to-emerald-700 shadow-lg hover:shadow-xl flex items-center justify-center`}
+              >
+                <span className="relative flex items-center">
+                  Book a Call
+                  <svg
+                    className="w-3.5 h-3.5 ml-2 group-hover:scale-110 transition-transform"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
+                    />
+                  </svg>
+                </span>
+              </Link>
+              <Link
+                href="/portfolio"
+                className={`group relative px-6 py-2.5 rounded-full text-sm font-semibold transition-all duration-300 hover:scale-105 overflow-hidden ${themeClasses.buttonOutline} flex items-center justify-center`}
+              >
+                <span className="relative">See Our Work</span>
+              </Link>
+            </div>
+
+            {/* Video Editing Creative Elements */}
+            <div className="flex flex-wrap gap-2 animate-fade-in-up animation-delay-600 justify-center lg:justify-start">
+              <div className={`flex items-center gap-1.5 px-3 py-1.5 ${themeClasses.badgePurple} border rounded-lg`}>
+                <svg className="w-3.5 h-3.5 text-purple-400" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M2 6a2 2 0 012-2h6a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6zM14.553 7.106A1 1 0 0014 8v4a1 1 0 00.553.894l2 1A1 1 0 0018 13V7a1 1 0 00-1.447-.894l-2 1z" />
                 </svg>
+                <span className={`text-xs ${themeClasses.textSecondary}`}>4K Ready</span>
+              </div>
+              <div className={`flex items-center gap-1.5 px-3 py-1.5 ${themeClasses.badgeBlue} border rounded-lg`}>
+                <svg className="w-3.5 h-3.5 text-blue-400" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" clipRule="evenodd" />
+                </svg>
+                <span className={`text-xs ${themeClasses.textSecondary}`}>24hr Turnaround</span>
+              </div>
+              <div className={`flex items-center gap-1.5 px-3 py-1.5 ${themeClasses.badgePink} border rounded-lg`}>
+                <svg className="w-3.5 h-3.5 text-pink-400" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                </svg>
+                <span className={`text-xs ${themeClasses.textSecondary}`}>Unlimited Revisions</span>
               </div>
             </div>
-            {/* Decorative elements */}
-            <div className="absolute -top-1 -left-1 w-3 h-3 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full opacity-60"></div>
-            <div className="absolute -bottom-1 -right-1 w-2 h-2 bg-gradient-to-r from-blue-500 to-pink-500 rounded-full opacity-40"></div>
-          </div>
-
-          {/* Main Heading */}
-          <h1 className={`text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-bold ${themeClasses.heroText} mb-3 sm:mb-4 leading-tight animate-fade-in-up`}>
-            Crush the Algorithm.
-            <span className={`block ${themeClasses.gradientText}`}>
-              Grow Your Audience.
-            </span>
-          </h1>
-
-          {/* Subheading */}
-          <p className={`text-sm sm:text-base md:text-lg ${themeClasses.heroSubtext} mb-4 sm:mb-6 animate-fade-in-up animation-delay-200`}>
-            High-energy edits designed to hook viewers in 3 seconds. Algorithm-crushing short-form videos for TikTok, Reels & Shorts.
-          </p>
-
-          {/* CTA Buttons */}
-          <div className="flex flex-col sm:flex-row gap-2 sm:gap-2.5 mb-4 sm:mb-6 animate-fade-in-up animation-delay-400 items-center lg:items-start">
-            <Link
-              href="/contact"
-              className={`group relative px-6 py-2.5 rounded-full text-sm font-semibold overflow-hidden transition-all duration-300 hover:scale-105 ${themeClasses.shadowPurple} flex items-center justify-center ${themeClasses.buttonPrimary}`}
-            >
-              <span className={`relative ${themeClasses.textWhite} flex items-center`}>
-                Start Your Project
-                <svg
-                  className="w-3.5 h-3.5 ml-2 group-hover:translate-x-1 transition-transform"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M17 8l4 4m0 0l-4 4m4-4H3"
-                  />
-                </svg>
-              </span>
-            </Link>
-            <Link
-              href="/pricing"
-              className={`group relative px-6 py-2.5 rounded-full text-sm font-semibold transition-all duration-300 hover:scale-105 overflow-hidden bg-gradient-to-r from-green-600 to-emerald-600 text-white hover:from-green-700 hover:to-emerald-700 shadow-lg hover:shadow-xl flex items-center justify-center`}
-            >
-              <span className="relative flex items-center">
-                Book a Call
-                <svg
-                  className="w-3.5 h-3.5 ml-2 group-hover:scale-110 transition-transform"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
-                  />
-                </svg>
-              </span>
-            </Link>
-            <Link
-              href="/portfolio"
-              className={`group relative px-6 py-2.5 rounded-full text-sm font-semibold transition-all duration-300 hover:scale-105 overflow-hidden ${themeClasses.buttonOutline} flex items-center justify-center`}
-            >
-              <span className="relative">See Our Work</span>
-            </Link>
-          </div>
-
-          {/* Video Editing Creative Elements */}
-          <div className="flex flex-wrap gap-2 animate-fade-in-up animation-delay-600 justify-center lg:justify-start">
-            <div className={`flex items-center gap-1.5 px-3 py-1.5 ${themeClasses.badgePurple} border rounded-lg`}>
-              <svg className="w-3.5 h-3.5 text-purple-400" fill="currentColor" viewBox="0 0 20 20">
-                <path d="M2 6a2 2 0 012-2h6a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6zM14.553 7.106A1 1 0 0014 8v4a1 1 0 00.553.894l2 1A1 1 0 0018 13V7a1 1 0 00-1.447-.894l-2 1z" />
-              </svg>
-              <span className={`text-xs ${themeClasses.textSecondary}`}>4K Ready</span>
-            </div>
-            <div className={`flex items-center gap-1.5 px-3 py-1.5 ${themeClasses.badgeBlue} border rounded-lg`}>
-              <svg className="w-3.5 h-3.5 text-blue-400" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" clipRule="evenodd" />
-              </svg>
-              <span className={`text-xs ${themeClasses.textSecondary}`}>24hr Turnaround</span>
-            </div>
-            <div className={`flex items-center gap-1.5 px-3 py-1.5 ${themeClasses.badgePink} border rounded-lg`}>
-              <svg className="w-3.5 h-3.5 text-pink-400" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-              </svg>
-              <span className={`text-xs ${themeClasses.textSecondary}`}>Unlimited Revisions</span>
-            </div>
-          </div>
           </div>
 
           {/* Right Video Demo Section */}
           <div className="relative hidden lg:block animate-fade-in-up animation-delay-400">
             {/* Video Container with Film Frame Effect */}
-            <div className="relative max-w-sm mx-auto">
+            <div className="relative max-w-2xl mx-auto">
               {/* Film Frame Border */}
               <div className={`absolute -inset-3 ${themeClasses.cardBg} rounded-xl opacity-50`}>
                 {/* Top perforations */}
                 <div className="absolute top-0 left-0 right-0 flex justify-around px-6 py-1.5">
-                  {[...Array(8)].map((_, i) => (
+                  {[...Array(12)].map((_, i) => (
                     <div key={`top-${i}`} className="w-1.5 h-1.5 bg-purple-500 rounded-sm" />
                   ))}
                 </div>
                 {/* Bottom perforations */}
                 <div className="absolute bottom-0 left-0 right-0 flex justify-around px-6 py-1.5">
-                  {[...Array(8)].map((_, i) => (
+                  {[...Array(12)].map((_, i) => (
                     <div key={`bottom-${i}`} className="w-1.5 h-1.5 bg-blue-500 rounded-sm" />
                   ))}
                 </div>
                 {/* Left perforations */}
                 <div className="absolute left-0 top-0 bottom-0 flex flex-col justify-around py-6 px-1.5">
-                  {[...Array(6)].map((_, i) => (
+                  {[...Array(4)].map((_, i) => (
                     <div key={`left-${i}`} className="w-1.5 h-1.5 bg-purple-500 rounded-sm" />
                   ))}
                 </div>
                 {/* Right perforations */}
                 <div className="absolute right-0 top-0 bottom-0 flex flex-col justify-around py-6 px-1.5">
-                  {[...Array(6)].map((_, i) => (
+                  {[...Array(4)].map((_, i) => (
                     <div key={`right-${i}`} className="w-1.5 h-1.5 bg-blue-500 rounded-sm" />
                   ))}
                 </div>
               </div>
 
               {/* Video Placeholder */}
-              <div className={`relative aspect-[9/16] ${themeClasses.cardBg} rounded-lg overflow-hidden border-2 ${themeClasses.cardBorder} shadow-xl`}>
+              <div className={`relative aspect-video ${themeClasses.cardBg} rounded-lg overflow-hidden border-2 ${themeClasses.cardBorder} shadow-xl`}>
                 {/* Gradient Overlay */}
                 <div className="absolute inset-0 bg-gradient-to-br from-purple-600/20 via-blue-600/20 to-pink-600/20"></div>
-                
+
                 {/* Demo Video Placeholder */}
                 <div className="absolute inset-0 flex items-center justify-center">
                   <div className="text-center">

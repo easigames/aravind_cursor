@@ -1,4 +1,4 @@
-# ArvindLuxEdit Website - Complete Features List
+# ArvEdit Website - Complete Features List
 
 ## 🎯 Overview
 A comprehensive video editing services website with 11 major sections, built with Next.js 15, TypeScript, and Tailwind CSS.

@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "ArvindLuxEdit - Creator-Focused Video Editing",
+  title: "ArvEdit - Creator-Focused Video Editing",
   description: "Algorithm-crushing short-form video editing for TikTok, Instagram Reels & YouTube Shorts",
 };
 

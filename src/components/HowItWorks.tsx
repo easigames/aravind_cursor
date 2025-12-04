@@ -11,8 +11,8 @@ export default function HowItWorks() {
   const steps = [
     {
       number: '01',
-      title: 'Upload & Brief Us',
-      description: 'Simply upload your raw footage (via Dropbox, Drive, etc.) and tell us the goal: The style, platform (TikTok/Reel), and any trending sound you want to use.',
+      title: 'Step 1',
+      description: 'Simply upload your raw footage (via Dropbox, Drive, etc.) and tell us your goal: The style, platform (TikTok/Reel), and any trending sound you want to use.',
       icon: (
         <svg className="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
@@ -21,8 +21,8 @@ export default function HowItWorks() {
     },
     {
       number: '02',
-      title: 'Confirm Quote & Timeline',
-      description: "We quickly review your footage and brief. We'll send you a fast, fixed-price quote and confirm the exact delivery date so we can get started immediately.",
+      title: 'Step 2',
+      description: 'I will quickly review your footage and requirements and send you a fast, fixed-price quote and confirm the exact delivery date so we can get started immediately.',
       icon: (
         <svg className="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
@@ -31,8 +31,8 @@ export default function HowItWorks() {
     },
     {
       number: '03',
-      title: 'Expert Editing',
-      description: 'Our editors get to work, using trending techniques, engaging captions, and tight syncing to create an algorithm-crushing video.',
+      title: 'Step 3',
+      description: 'I will get to work by using trending techniques, engaging captions, and tight syncing to create an algorithm-crushing video.',
       icon: (
         <svg className="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
@@ -42,8 +42,8 @@ export default function HowItWorks() {
     },
     {
       number: '04',
-      title: 'Fast Feedback Loop',
-      description: "We send the first draft your way. You get up to 2 rounds of quick revisions to ensure it's exactly what you need to hit publish.",
+      title: 'Step 4',
+      description: "I send the first draft your way. You get up to 2 rounds of quick revisions to ensure it's exactly what you need to hit publish.",
       icon: (
         <svg className="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
@@ -52,8 +52,8 @@ export default function HowItWorks() {
     },
     {
       number: '05',
-      title: 'Publish & Grow',
-      description: "Receive your high-resolution video optimized and ready-to-upload for Instagram, TikTok, or YouTube. All that's left is to hit Publish!",
+      title: 'Step 5',
+      description: 'Receive your high-resolution video optimized and ready-to-upload for Instagram, TikTok, YouTube, IMdb, Facebook etc. All that\'s left is to hit that Publish button.',
       icon: (
         <svg className="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
@@ -139,16 +139,16 @@ export default function HowItWorks() {
 
                 {/* Icon */}
                 <div className={`mb-6 ${themeClasses.textPrimary}`}>
-                  {step.icon}
+                      {step.icon}
                 </div>
 
                 {/* Content */}
                 <h3 className={`text-3xl md:text-4xl font-bold ${themeClasses.textPrimary} mb-4`}>
-                  {step.title}
-                </h3>
+                    {step.title}
+                  </h3>
                 <p className={`${themeClasses.textSecondary} text-lg md:text-xl leading-relaxed`}>
-                  {step.description}
-                </p>
+                    {step.description}
+                  </p>
               </div>
             </div>
           ))}

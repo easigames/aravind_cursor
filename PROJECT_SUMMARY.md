@@ -1,4 +1,4 @@
-# ArvindLuxEdit Website - Project Summary
+# ArvEdit Website - Project Summary
 
 ## 🎉 Project Complete!
 

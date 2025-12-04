@@ -7,7 +7,7 @@ import { useTheme } from '@/components/ThemeProvider';
 
 export default function AboutPage() {
   const { themeClasses } = useTheme();
-  
+
   return (
     <div className={`min-h-screen ${themeClasses.bgPrimary}`}>
       <Header />
@@ -15,7 +15,7 @@ export default function AboutPage() {
         {/* About Us Section */}
         <section className={`py-12 sm:py-16 md:py-20 relative overflow-hidden ${themeClasses.bgPrimary}`}>
           <div className={`absolute inset-0 ${themeClasses.bgGradient} pointer-events-none`}></div>
-          
+
           <div className="container mx-auto px-4 sm:px-6 relative z-10">
             {/* Section Header */}
             <div className="text-center max-w-3xl mx-auto mb-8 sm:mb-12 md:mb-16">
@@ -33,12 +33,12 @@ export default function AboutPage() {
                 <div className="space-y-6">
                   <h3 className={`text-2xl font-bold ${themeClasses.textPrimary}`}>Our Mission</h3>
                   <p className={`${themeClasses.textSecondary} leading-relaxed`}>
-                    At ArvindLuxEdit, we're dedicated to helping content creators and brands 
-                    break through the noise. We understand the algorithm, the trends, and most 
+                    At ArvEdit, we're dedicated to helping content creators and brands
+                    break through the noise. We understand the algorithm, the trends, and most
                     importantly—what makes viewers stop scrolling and start watching.
                   </p>
                   <p className={`${themeClasses.textSecondary} leading-relaxed`}>
-                    Our mission is simple: deliver high-energy, platform-perfect edits that 
+                    Our mission is simple: deliver high-energy, platform-perfect edits that
                     boost engagement, increase watch time, and help you grow your audience.
                   </p>
                 </div>

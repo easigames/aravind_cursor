@@ -1,4 +1,4 @@
-# ArvindLuxEdit - Professional Video Editing Website
+# ArvEdit - Professional Video Editing Website
 
 A modern, responsive video editing services website built with Next.js 15, TypeScript, and Tailwind CSS. Inspired by professional creative agency designs.
 
