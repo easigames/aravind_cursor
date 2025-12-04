@@ -8,13 +8,11 @@ export default function BookCall() {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
-    phone: '',
     company: '',
-    projectType: '',
-    budget: '',
-    date: '',
-    time: '',
-    message: '',
+    contentType: '',
+    monthlyBudget: '',
+    preferredTime: '',
+    hearAbout: '',
   });
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -25,13 +23,11 @@ export default function BookCall() {
     setFormData({
       name: '',
       email: '',
-      phone: '',
       company: '',
-      projectType: '',
-      budget: '',
-      date: '',
-      time: '',
-      message: '',
+      contentType: '',
+      monthlyBudget: '',
+      preferredTime: '',
+      hearAbout: '',
     });
   };
 
@@ -50,12 +46,9 @@ export default function BookCall() {
       <div className="container mx-auto px-6 relative z-10">
         {/* Section Header */}
         <div className="text-center max-w-3xl mx-auto mb-16">
-          <h2 className={`text-4xl md:text-5xl font-bold ${themeClasses.textPrimary} mb-4`}>
-            Book a Call With Us Today
+          <h2 className={`text-3xl sm:text-4xl md:text-5xl font-bold ${themeClasses.textPrimary} mb-4`}>
+            Get an Edit That Makes People Watch — Book a Free 30-Min Strategy Call
           </h2>
-          <p className={`text-xl ${themeClasses.textSecondary}`}>
-            Let's discuss your project and how we can bring your vision to life. Schedule a free 30-minute consultation.
-          </p>
         </div>
 
         <div className="grid lg:grid-cols-2 gap-12 max-w-6xl mx-auto">
@@ -156,176 +149,146 @@ export default function BookCall() {
 
           {/* Right Side - Booking Form */}
           <div className={`${themeClasses.cardBg} ${themeClasses.cardBorder} border backdrop-blur-sm p-8 md:p-10 rounded-3xl`}>
-            <h3 className={`text-2xl font-bold ${themeClasses.textPrimary} mb-6`}>
-              Schedule Your Free Consultation
-            </h3>
             <form onSubmit={handleSubmit} className="space-y-5">
-              <div className="grid md:grid-cols-2 gap-5">
-                <div>
-                  <label htmlFor="name" className={`block ${themeClasses.textPrimary} font-semibold mb-2`}>
-                    Full Name *
-                  </label>
-                  <input
-                    type="text"
-                    id="name"
-                    name="name"
-                    required
-                    value={formData.name}
-                    onChange={handleChange}
-                    className={`w-full px-4 py-3 rounded-lg ${themeClasses.inputBg} ${themeClasses.inputBorder} border ${themeClasses.inputText} ${themeClasses.inputPlaceholder} focus:border-purple-600 focus:ring-2 focus:ring-purple-600/20 outline-none transition-all`}
-                    placeholder="John Doe"
-                  />
-                </div>
-
-                <div>
-                  <label htmlFor="email" className={`block ${themeClasses.textPrimary} font-semibold mb-2`}>
-                    Email *
-                  </label>
-                  <input
-                    type="email"
-                    id="email"
-                    name="email"
-                    required
-                    value={formData.email}
-                    onChange={handleChange}
-                    className={`w-full px-4 py-3 rounded-lg ${themeClasses.inputBg} ${themeClasses.inputBorder} border ${themeClasses.inputText} ${themeClasses.inputPlaceholder} focus:border-purple-600 focus:ring-2 focus:ring-purple-600/20 outline-none transition-all`}
-                    placeholder="john@example.com"
-                  />
-                </div>
-              </div>
-
-              <div className="grid md:grid-cols-2 gap-5">
-                <div>
-                  <label htmlFor="phone" className={`block ${themeClasses.textPrimary} font-semibold mb-2`}>
-                    Phone Number *
-                  </label>
-                  <input
-                    type="tel"
-                    id="phone"
-                    name="phone"
-                    required
-                    value={formData.phone}
-                    onChange={handleChange}
-                    className={`w-full px-4 py-3 rounded-lg ${themeClasses.inputBg} ${themeClasses.inputBorder} border ${themeClasses.inputText} ${themeClasses.inputPlaceholder} focus:border-purple-600 focus:ring-2 focus:ring-purple-600/20 outline-none transition-all`}
-                    placeholder="+1 (555) 123-4567"
-                  />
-                </div>
-
-                <div>
-                  <label htmlFor="company" className={`block ${themeClasses.textPrimary} font-semibold mb-2`}>
-                    Company
-                  </label>
-                  <input
-                    type="text"
-                    id="company"
-                    name="company"
-                    value={formData.company}
-                    onChange={handleChange}
-                    className={`w-full px-4 py-3 rounded-lg ${themeClasses.inputBg} ${themeClasses.inputBorder} border ${themeClasses.inputText} ${themeClasses.inputPlaceholder} focus:border-purple-600 focus:ring-2 focus:ring-purple-600/20 outline-none transition-all`}
-                    placeholder="Your Company"
-                  />
-                </div>
+              <div>
+                <label htmlFor="name" className={`block ${themeClasses.textPrimary} font-semibold mb-2`}>
+                  Name <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  id="name"
+                  name="name"
+                  required
+                  value={formData.name}
+                  onChange={handleChange}
+                  className={`w-full px-4 py-3 rounded-lg ${themeClasses.inputBg} ${themeClasses.inputBorder} border ${themeClasses.inputText} ${themeClasses.inputPlaceholder} focus:border-purple-600 focus:ring-2 focus:ring-purple-600/20 outline-none transition-all`}
+                  placeholder="Your name"
+                />
               </div>
 
               <div>
-                <label htmlFor="projectType" className={`block ${themeClasses.textPrimary} font-semibold mb-2`}>
-                  Project Type *
+                <label htmlFor="email" className={`block ${themeClasses.textPrimary} font-semibold mb-2`}>
+                  Email <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="email"
+                  id="email"
+                  name="email"
+                  required
+                  value={formData.email}
+                  onChange={handleChange}
+                  className={`w-full px-4 py-3 rounded-lg ${themeClasses.inputBg} ${themeClasses.inputBorder} border ${themeClasses.inputText} ${themeClasses.inputPlaceholder} focus:border-purple-600 focus:ring-2 focus:ring-purple-600/20 outline-none transition-all`}
+                  placeholder="your@email.com"
+                />
+              </div>
+
+              <div>
+                <label htmlFor="contentType" className={`block ${themeClasses.textPrimary} font-semibold mb-2`}>
+                  What kind of content do you create? <span className="text-red-500">*</span>
                 </label>
                 <select
-                  id="projectType"
-                  name="projectType"
+                  id="contentType"
+                  name="contentType"
                   required
-                  value={formData.projectType}
+                  value={formData.contentType}
                   onChange={handleChange}
                   className={`w-full px-4 py-3 rounded-lg ${themeClasses.inputBg} ${themeClasses.inputBorder} border ${themeClasses.inputText} focus:border-purple-600 focus:ring-2 focus:ring-purple-600/20 outline-none transition-all appearance-none cursor-pointer`}
                   style={{ backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e")`, backgroundPosition: 'right 0.5rem center', backgroundRepeat: 'no-repeat', backgroundSize: '1.5em 1.5em', paddingRight: '2.5rem' }}
                 >
-                  <option value="">Select project type</option>
-                  <option value="commercial">Commercial</option>
-                  <option value="corporate">Corporate Video</option>
-                  <option value="social">Social Media Content</option>
-                  <option value="music">Music Video</option>
-                  <option value="event">Event Coverage</option>
+                  <option value="">Select content type</option>
+                  <option value="tiktok-reels">TikTok/Reels</option>
+                  <option value="youtube-shorts">YouTube Shorts</option>
+                  <option value="long-form-youtube">Long-form YouTube</option>
+                  <option value="tv-film">TV/Film</option>
+                  <option value="brand-commercial">Brand / Commercial</option>
                   <option value="other">Other</option>
                 </select>
               </div>
 
               <div>
-                <label htmlFor="budget" className={`block ${themeClasses.textPrimary} font-semibold mb-2`}>
-                  Budget Range
+                <label htmlFor="monthlyBudget" className={`block ${themeClasses.textPrimary} font-semibold mb-2`}>
+                  Your Monthly Editing Budget <span className="text-red-500">*</span>
                 </label>
                 <select
-                  id="budget"
-                  name="budget"
-                  value={formData.budget}
+                  id="monthlyBudget"
+                  name="monthlyBudget"
+                  required
+                  value={formData.monthlyBudget}
                   onChange={handleChange}
                   className={`w-full px-4 py-3 rounded-lg ${themeClasses.inputBg} ${themeClasses.inputBorder} border ${themeClasses.inputText} focus:border-purple-600 focus:ring-2 focus:ring-purple-600/20 outline-none transition-all appearance-none cursor-pointer`}
                   style={{ backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e")`, backgroundPosition: 'right 0.5rem center', backgroundRepeat: 'no-repeat', backgroundSize: '1.5em 1.5em', paddingRight: '2.5rem' }}
                 >
                   <option value="">Select budget range</option>
-                  <option value="under-1k">Under $1,000</option>
-                  <option value="1k-5k">$1,000 - $5,000</option>
-                  <option value="5k-10k">$5,000 - $10,000</option>
-                  <option value="10k-plus">$10,000+</option>
+                  <option value="under-500">Under $500/month</option>
+                  <option value="500-1000">$500 - $1,000/month</option>
+                  <option value="1000-2500">$1,000 - $2,500/month</option>
+                  <option value="2500-5000">$2,500 - $5,000/month</option>
+                  <option value="5000-plus">$5,000+/month</option>
                 </select>
               </div>
 
-              <div className="grid md:grid-cols-2 gap-5">
-                <div>
-                  <label htmlFor="date" className={`block ${themeClasses.textPrimary} font-semibold mb-2`}>
-                    Preferred Date *
-                  </label>
-                  <input
-                    type="date"
-                    id="date"
-                    name="date"
-                    required
-                    value={formData.date}
-                    onChange={handleChange}
-                    className={`w-full px-4 py-3 rounded-lg ${themeClasses.inputBg} ${themeClasses.inputBorder} border ${themeClasses.inputText} focus:border-purple-600 focus:ring-2 focus:ring-purple-600/20 outline-none transition-all`}
-                  />
-                </div>
-
-                <div>
-                  <label htmlFor="time" className={`block ${themeClasses.textPrimary} font-semibold mb-2`}>
-                    Preferred Time *
-                  </label>
-                  <select
-                    id="time"
-                    name="time"
-                    required
-                    value={formData.time}
-                    onChange={handleChange}
-                    className={`w-full px-4 py-3 rounded-lg ${themeClasses.inputBg} ${themeClasses.inputBorder} border ${themeClasses.inputText} focus:border-purple-600 focus:ring-2 focus:ring-purple-600/20 outline-none transition-all appearance-none cursor-pointer`}
-                    style={{ backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e")`, backgroundPosition: 'right 0.5rem center', backgroundRepeat: 'no-repeat', backgroundSize: '1.5em 1.5em', paddingRight: '2.5rem' }}
-                  >
-                    <option value="">Select time</option>
-                    <option value="9am">9:00 AM</option>
-                    <option value="10am">10:00 AM</option>
-                    <option value="11am">11:00 AM</option>
-                    <option value="12pm">12:00 PM</option>
-                    <option value="1pm">1:00 PM</option>
-                    <option value="2pm">2:00 PM</option>
-                    <option value="3pm">3:00 PM</option>
-                    <option value="4pm">4:00 PM</option>
-                    <option value="5pm">5:00 PM</option>
-                  </select>
-                </div>
+              <div>
+                <label htmlFor="preferredTime" className={`block ${themeClasses.textPrimary} font-semibold mb-2`}>
+                  Preferred Time <span className="text-red-500">*</span>
+                </label>
+                <select
+                  id="preferredTime"
+                  name="preferredTime"
+                  required
+                  value={formData.preferredTime}
+                  onChange={handleChange}
+                  className={`w-full px-4 py-3 rounded-lg ${themeClasses.inputBg} ${themeClasses.inputBorder} border ${themeClasses.inputText} focus:border-purple-600 focus:ring-2 focus:ring-purple-600/20 outline-none transition-all appearance-none cursor-pointer`}
+                  style={{ backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e")`, backgroundPosition: 'right 0.5rem center', backgroundRepeat: 'no-repeat', backgroundSize: '1.5em 1.5em', paddingRight: '2.5rem' }}
+                >
+                  <option value="">Select preferred time</option>
+                  <option value="9am">9:00 AM</option>
+                  <option value="10am">10:00 AM</option>
+                  <option value="11am">11:00 AM</option>
+                  <option value="12pm">12:00 PM</option>
+                  <option value="1pm">1:00 PM</option>
+                  <option value="2pm">2:00 PM</option>
+                  <option value="3pm">3:00 PM</option>
+                  <option value="4pm">4:00 PM</option>
+                  <option value="5pm">5:00 PM</option>
+                </select>
               </div>
 
               <div>
-                <label htmlFor="message" className={`block ${themeClasses.textPrimary} font-semibold mb-2`}>
-                  Tell Us About Your Project
+                <label htmlFor="company" className={`block ${themeClasses.textPrimary} font-semibold mb-2`}>
+                  Company <span className={`${themeClasses.textSecondary} text-sm font-normal`}>(optional)</span>
                 </label>
-                <textarea
-                  id="message"
-                  name="message"
-                  value={formData.message}
+                <input
+                  type="text"
+                  id="company"
+                  name="company"
+                  value={formData.company}
                   onChange={handleChange}
-                  rows={4}
-                  className={`w-full px-4 py-3 rounded-lg ${themeClasses.inputBg} ${themeClasses.inputBorder} border ${themeClasses.inputText} ${themeClasses.inputPlaceholder} focus:border-purple-600 focus:ring-2 focus:ring-purple-600/20 outline-none transition-all resize-none`}
-                  placeholder="Brief description of your project..."
+                  className={`w-full px-4 py-3 rounded-lg ${themeClasses.inputBg} ${themeClasses.inputBorder} border ${themeClasses.inputText} ${themeClasses.inputPlaceholder} focus:border-purple-600 focus:ring-2 focus:ring-purple-600/20 outline-none transition-all`}
+                  placeholder="Your company name"
                 />
+              </div>
+
+              <div>
+                <label htmlFor="hearAbout" className={`block ${themeClasses.textPrimary} font-semibold mb-2`}>
+                  How did you hear about me?
+                </label>
+                <select
+                  id="hearAbout"
+                  name="hearAbout"
+                  value={formData.hearAbout}
+                  onChange={handleChange}
+                  className={`w-full px-4 py-3 rounded-lg ${themeClasses.inputBg} ${themeClasses.inputBorder} border ${themeClasses.inputText} focus:border-purple-600 focus:ring-2 focus:ring-purple-600/20 outline-none transition-all appearance-none cursor-pointer`}
+                  style={{ backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e")`, backgroundPosition: 'right 0.5rem center', backgroundRepeat: 'no-repeat', backgroundSize: '1.5em 1.5em', paddingRight: '2.5rem' }}
+                >
+                  <option value="">Select an option</option>
+                  <option value="google">Google Search</option>
+                  <option value="social-media">Social Media</option>
+                  <option value="referral">Referral</option>
+                  <option value="youtube">YouTube</option>
+                  <option value="tiktok">TikTok</option>
+                  <option value="instagram">Instagram</option>
+                  <option value="other">Other</option>
+                </select>
               </div>
 
               <button
