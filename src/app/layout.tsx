@@ -16,6 +16,9 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "ArvEdit - Creator-Focused Video Editing",
   description: "Algorithm-crushing short-form video editing for TikTok, Instagram Reels & YouTube Shorts",
+  icons: {
+    icon: '/icon.svg',
+  },
 };
 
 export default function RootLayout({

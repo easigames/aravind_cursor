@@ -95,9 +95,17 @@ export default function AboutPage() {
 
               {/* Meet Your Video Editors */}
               <div className="mt-16 sm:mt-20">
-                <h3 className={`text-2xl sm:text-3xl font-bold ${themeClasses.textPrimary} text-center mb-8 sm:mb-12`}>
-                  Meet Your Video Editors
-                </h3>
+                <div className="flex items-center justify-center gap-3 mb-8 sm:mb-12">
+                  {/* Video camera icon */}
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-r from-purple-500 to-blue-500 rounded-xl flex items-center justify-center">
+                    <svg className="w-5 h-5 sm:w-6 sm:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                    </svg>
+                  </div>
+                  <h3 className={`text-2xl sm:text-3xl font-bold ${themeClasses.textPrimary}`}>
+                    Meet Your Video Editors
+                  </h3>
+                </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 max-w-3xl mx-auto">
                   {/* Arvind */}
                   <div className={`${themeClasses.cardBg} ${themeClasses.cardBorder} border backdrop-blur-sm rounded-2xl p-6 sm:p-8 text-center group hover:scale-105 transition-all duration-300`}>
