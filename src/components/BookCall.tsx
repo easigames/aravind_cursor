@@ -14,21 +14,50 @@ export default function BookCall() {
     preferredTime: '',
     hearAbout: '',
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState<{ type: 'success' | 'error' | null; message: string }>({ type: null, message: '' });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle form submission here
-    console.log('Call booking submitted:', formData);
-    alert('Thank you! We\'ll send you a calendar invite shortly.');
-    setFormData({
-      name: '',
-      email: '',
-      company: '',
-      contentType: '',
-      monthlyBudget: '',
-      preferredTime: '',
-      hearAbout: '',
-    });
+    setIsSubmitting(true);
+    setSubmitStatus({ type: null, message: '' });
+
+    try {
+      const response = await fetch('/api/book-call', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to book call');
+      }
+
+      setSubmitStatus({
+        type: 'success',
+        message: 'Thank you! We\'ll send you a calendar invite shortly.',
+      });
+      setFormData({
+        name: '',
+        email: '',
+        company: '',
+        contentType: '',
+        monthlyBudget: '',
+        preferredTime: '',
+        hearAbout: '',
+      });
+    } catch (error) {
+      setSubmitStatus({
+        type: 'error',
+        message: error instanceof Error ? error.message : 'Something went wrong. Please try again.',
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -291,11 +320,24 @@ export default function BookCall() {
                 </select>
               </div>
 
+              {submitStatus.type && (
+                <div
+                  className={`p-4 rounded-lg ${
+                    submitStatus.type === 'success'
+                      ? 'bg-green-500/10 border border-green-500/20 text-green-400'
+                      : 'bg-red-500/10 border border-red-500/20 text-red-400'
+                  }`}
+                >
+                  {submitStatus.message}
+                </div>
+              )}
+
               <button
                 type="submit"
-                className={`${themeClasses.buttonPrimary} w-full py-3 px-6 rounded-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105`}
+                disabled={isSubmitting}
+                className={`${themeClasses.buttonPrimary} w-full py-3 px-6 rounded-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100`}
               >
-                Book My Free Call
+                {isSubmitting ? 'Submitting...' : 'Book My Free Call'}
               </button>
 
               <p className="text-sm text-gray-400 text-center">

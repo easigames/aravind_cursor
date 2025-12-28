@@ -6,6 +6,7 @@ import Header from '@/components/Header';
 import Hero from '@/components/Hero';
 import Footer from '@/components/Footer';
 import { useTheme } from '@/components/ThemeProvider';
+import VideoPlayer from '@/components/VideoPlayer';
 
 export default function Home() {
   const { themeClasses } = useTheme();
@@ -173,10 +174,187 @@ export default function Home() {
     };
   }, [selectedVideo]);
 
+  // Testimonials data - 3 vertical testimonial videos
+  const testimonials = [
+    {
+      id: 1,
+      name: 'Courtney Lombardo',
+      role: 'Content Creator',
+      videoUrl: 'r2:courtney_testimonial.mp4', // Replace with your R2 video key or other video URL
+      quote: "I am always so satisfied with his work.",
+    },
+    {
+      id: 2,
+      name: 'James Meadows',
+      role: 'Influencer',
+      videoUrl: 'r2:james_testimonial.mp4', // Replace with your R2 video key or other video URL
+      quote: 'The services have always been AWESOME!',
+    },
+    {
+      id: 3,
+      name: 'Janice Silver',
+      role: 'Brand Ambassador',
+      videoUrl: 'r2:janice_testimonial.mp4', // Replace with your R2 video key or other video URL
+      quote: 'He\'s done an amazing job and is really really fast!',
+    },
+  ];
+
+  // Helper to get video stream URL (similar to Portfolio)
+  const getVideoStreamUrl = (videoUrl: string | undefined): string | null => {
+    if (!videoUrl || videoUrl.trim() === '') return null;
+
+    // R2 videos - use our optimized streaming API
+    if (videoUrl.startsWith('r2:')) {
+      const key = videoUrl.replace(/^r2:/, '');
+      return `/api/video/${encodeURIComponent(key)}`;
+    }
+
+    // Local video files
+    if (videoUrl.match(/\.(mp4|webm|ogg|mov)$/i)) {
+      return videoUrl;
+    }
+
+    // YouTube
+    const youtubeRegex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/;
+    const youtubeMatch = videoUrl.match(youtubeRegex);
+    if (youtubeMatch) {
+      return `https://www.youtube.com/embed/${youtubeMatch[1]}`;
+    }
+
+    // Vimeo
+    const vimeoRegex = /(?:vimeo\.com\/)(\d+)/;
+    const vimeoMatch = videoUrl.match(vimeoRegex);
+    if (vimeoMatch) {
+      return `https://player.vimeo.com/video/${vimeoMatch[1]}`;
+    }
+
+    // Google Drive
+    const drivePatterns = [
+      /\/file\/d\/([a-zA-Z0-9_-]+)/,
+      /id=([a-zA-Z0-9_-]+)/,
+      /\/d\/([a-zA-Z0-9_-]+)/
+    ];
+    for (const pattern of drivePatterns) {
+      const match = videoUrl.match(pattern);
+      if (match && match[1]) {
+        return `https://drive.google.com/file/d/${match[1]}/preview`;
+      }
+    }
+
+    return null;
+  };
+
   return (
     <div className={`min-h-screen ${themeClasses.bgPrimary}`}>
       <Header />
       <Hero />
+
+      {/* Testimonials Section */}
+      <section className={`py-12 sm:py-16 md:py-20 relative overflow-hidden ${themeClasses.bgPrimary}`}>
+        <div className={`absolute inset-0 ${themeClasses.bgGradient} pointer-events-none opacity-30`}></div>
+        
+        <div className="container mx-auto px-4 sm:px-6 relative z-10">
+          {/* Section Header */}
+          <div className="text-center max-w-3xl mx-auto mb-8 sm:mb-12 md:mb-16">
+            <h2 className={`text-3xl sm:text-4xl md:text-5xl font-bold ${themeClasses.textPrimary} mb-3 sm:mb-4`}>
+              What Our Clients Say
+            </h2>
+            <p className={`text-base sm:text-lg md:text-xl ${themeClasses.textSecondary}`}>
+              Real testimonials from creators who transformed their content with ArvEdit
+            </p>
+          </div>
+
+          {/* Testimonial Videos Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 max-w-6xl mx-auto">
+            {testimonials.map((testimonial, index) => {
+              const videoSrc = getVideoStreamUrl(testimonial.videoUrl);
+              const hasVideo = videoSrc !== null;
+              
+              // Debug: Log video source (remove in production)
+              if (typeof window !== 'undefined' && hasVideo) {
+                console.log(`Testimonial ${index + 1} video source:`, videoSrc);
+              }
+
+              return (
+                <div
+                  key={testimonial.id}
+                  className={`group relative ${themeClasses.cardBg} ${themeClasses.cardBorder} border rounded-2xl overflow-hidden ${themeClasses.shadowHover} transition-all duration-500 hover:scale-105 hover:shadow-2xl`}
+                >
+                  {/* Video Container - Vertical/Portrait */}
+                  <div className="relative w-full aspect-[9/16] bg-black">
+                    {hasVideo ? (
+                      <>
+                        <div className="relative w-full h-full z-0">
+                          <VideoPlayer
+                            src={videoSrc}
+                            title={testimonial.name}
+                            aspectRatio="portrait"
+                            muted={false}
+                            loop
+                            controls={true}
+                            preload="metadata"
+                            className="w-full h-full"
+                          />
+                        </div>
+                        {/* Gradient Overlay - only at bottom for text readability, doesn't block controls */}
+                        <div className="absolute bottom-0 left-0 right-0 h-1/2 bg-gradient-to-t from-black/95 via-black/60 to-transparent pointer-events-none z-10"></div>
+                      </>
+                    ) : (
+                      <div className={`absolute inset-0 flex items-center justify-center ${themeClasses.bgTertiary}`}>
+                        <div className="text-center p-4">
+                          <svg className="w-12 h-12 text-gray-500 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                          </svg>
+                          <p className={`text-sm ${themeClasses.textSecondary}`}>
+                            Video coming soon
+                          </p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Testimonial Content */}
+                  <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-6 z-20 pointer-events-none">
+                    {/* Quote */}
+                    <div className="mb-3 sm:mb-4">
+                      <svg className="w-6 h-6 text-purple-400 mb-2" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.996 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.984zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z"/>
+                      </svg>
+                      <p className={`text-sm sm:text-base ${themeClasses.textWhite} font-medium leading-relaxed`}>
+                        "{testimonial.quote}"
+                      </p>
+                    </div>
+
+                    {/* Author Info */}
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-full bg-gradient-to-r from-purple-500 to-blue-500 flex items-center justify-center flex-shrink-0">
+                        <span className={`text-sm font-bold ${themeClasses.textWhite}`}>
+                          {testimonial.name.charAt(0)}
+                        </span>
+                      </div>
+                      <div>
+                        <p className={`text-sm sm:text-base font-semibold ${themeClasses.textWhite}`}>
+                          {testimonial.name}
+                        </p>
+                        <p className={`text-xs sm:text-sm ${themeClasses.textWhite}/70`}>
+                          {testimonial.role}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Hover Glow Effect */}
+                  <div className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
+                    style={{
+                      boxShadow: '0 0 40px rgba(168, 85, 247, 0.3), inset 0 0 40px rgba(168, 85, 247, 0.1)'
+                    }}
+                  ></div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </section>
 
       {/* Key Features Section */}
       <section ref={sectionRef} className={`py-12 sm:py-16 md:py-20 relative overflow-hidden ${themeClasses.bgPrimary}`}>
