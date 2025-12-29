@@ -2,13 +2,16 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useTheme } from './ThemeProvider';
-import VideoPlayer, { ThumbnailVideo } from './VideoPlayer';
+import VideoPlayer from './VideoPlayer';
 
 export default function Portfolio() {
   const { themeClasses } = useTheme();
   const [visibleItems, setVisibleItems] = useState<Set<number>>(new Set());
-  const [selectedVideo, setSelectedVideo] = useState<number | null>(null);
   const itemsRef = useRef<(HTMLDivElement | null)[]>([]);
+  const [playingVideoId, setPlayingVideoId] = useState<number | null>(null);
+  const [playingVideos, setPlayingVideos] = useState<Set<number>>(new Set());
+  const portfolioVideoRefs = useRef<{ [key: number]: HTMLVideoElement | null }>({});
+  const wasPlayingRefs = useRef<{ [key: number]: boolean }>({});
 
   /**
    * Get the streaming URL for a video
@@ -68,72 +71,90 @@ export default function Portfolio() {
     return url.startsWith('r2:') || url.match(/\.(mp4|webm|ogg|mov)$/i) !== null;
   }, []);
 
+  /**
+   * Normalize image path for Next.js public folder
+   */
+  const getImageUrl = useCallback((imageUrl: string | undefined): string | undefined => {
+    if (!imageUrl) return undefined;
+    // If it starts with ./ convert to /
+    if (imageUrl.startsWith('./')) {
+      return imageUrl.replace('./', '/');
+    }
+    // If it doesn't start with / or http, add /
+    if (!imageUrl.startsWith('/') && !imageUrl.startsWith('http')) {
+      return `/${imageUrl}`;
+    }
+    return imageUrl;
+  }, []);
+
   // Portfolio projects - R2 videos for fast CDN-backed streaming
   const projects = [
     {
       id: 1,
       title: 'King David',
       image: '',
-      videoUrl: 'r2:janice_testimonial.mp4',
+      videoUrl: 'r2:king_david.mp4',
       views: '2.5M',
       aspectRatio: 'tall',
     },
     {
       id: 2,
-      title: 'Arvind and James',
+      title: 'Kara',
       image: '',
-      videoUrl: 'r2:arvind_james.mp4',
+      videoUrl: 'r2:kara.mp4',
       views: '850K',
-      aspectRatio: 'wide',
+      aspectRatio: 'tall',
     },
     {
       id: 3,
-      title: 'Social Media Campaign',
-      image: 'https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=800&h=600&fit=crop',
-      videoUrl: '',
+      title: 'Davida',
+      image: '',
+      videoUrl: 'r2:davida.mp4',
       views: '3.2M',
-      aspectRatio: 'square',
+      aspectRatio: 'tall',
     },
     {
       id: 4,
-      title: 'Music Video',
-      image: 'https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?w=800&h=600&fit=crop',
-      videoUrl: '',
+      title: 'James',
+      image: '',
+      videoUrl: 'r2:james_tall_30.mp4',
       views: '5.1M',
       aspectRatio: 'tall',
     },
     {
       id: 5,
-      title: 'Product Launch',
-      image: 'https://images.unsplash.com/photo-1574717024653-61fd2cf4d44d?w=800&h=600&fit=crop',
-      videoUrl: '',
+      title: 'Darline',
+      image: '',
+      videoUrl: 'r2:darline.mp4',
       views: '1.8M',
       aspectRatio: 'wide',
     },
-    {
-      id: 6,
-      title: 'Instagram Reels',
-      image: 'https://images.unsplash.com/photo-1611162616305-c69b3fa7fbe0?w=800&h=600&fit=crop',
-      videoUrl: '',
-      views: '4.3M',
-      aspectRatio: 'square',
-    },
+  
     {
       id: 7,
-      title: 'TikTok Viral',
-      image: 'https://images.unsplash.com/photo-1611162618071-b39a2ec055fb?w=800&h=600&fit=crop',
-      videoUrl: '',
+      title: 'Will',
+      image: '',
+      videoUrl: 'r2:will.mp4',
       views: '8.7M',
       aspectRatio: 'tall',
     },
     {
       id: 8,
-      title: 'Event Highlight',
-      image: 'https://images.unsplash.com/photo-1505373877841-8d25f7d46678?w=800&h=600&fit=crop',
-      videoUrl: '',
+      title: 'Twerking TikTok',
+      image: '/images/twerking_tiktok-Cover.jpg',
+      videoUrl: 'r2:twerking_tiktok.mp4',
+      views: '8.7M',
+      aspectRatio: 'tall',
+    },
+    {
+      id: 9,
+      title: 'Yoshi',
+      image: '',
+      videoUrl: 'r2:yoshi_wide.mp4',
       views: '1.2M',
       aspectRatio: 'wide',
     },
+  
   ];
 
   // Scroll animation observer
@@ -164,32 +185,59 @@ export default function Portfolio() {
     };
   }, []);
 
-  // Close video modal on Escape key
+  // Intersection Observer to pause portfolio videos when out of view
   useEffect(() => {
-    const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && selectedVideo !== null) {
-        setSelectedVideo(null);
-      }
-    };
+    const videoObserver = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          const projectId = Number(entry.target.getAttribute('data-project-id'));
+          const video = portfolioVideoRefs.current[projectId];
+          
+          if (!video) return;
 
-    if (selectedVideo !== null) {
-      document.addEventListener('keydown', handleEscape);
-      document.body.style.overflow = 'hidden';
-    }
+          if (entry.isIntersecting) {
+            // Video is in view - resume if it was playing before
+            if (wasPlayingRefs.current[projectId]) {
+              video.play().catch(() => {});
+              setPlayingVideos((prev) => new Set(prev).add(projectId));
+            }
+          } else {
+            // Video is out of view - pause it
+            wasPlayingRefs.current[projectId] = !video.paused;
+            video.pause();
+            setPlayingVideos((prev) => {
+              const newSet = new Set(prev);
+              newSet.delete(projectId);
+              return newSet;
+            });
+          }
+        });
+      },
+      { threshold: 0.3 } // Trigger when 30% of video is visible
+    );
+
+    // Observe all portfolio items
+    itemsRef.current.forEach((item) => {
+      if (item && item.getAttribute('data-project-id')) {
+        videoObserver.observe(item);
+      }
+    });
 
     return () => {
-      document.removeEventListener('keydown', handleEscape);
-      document.body.style.overflow = 'unset';
+      videoObserver.disconnect();
     };
-  }, [selectedVideo]);
+  }, []);
 
-  // Get aspect ratio classes
+
+  // Get aspect ratio classes - for mobile, use consistent aspect ratio
   const getAspectRatioClass = (ratio: string) => {
+    // On mobile (grid-cols-2), all items use same aspect ratio
+    // On larger screens (lg), use masonry grid with spans
     switch (ratio) {
       case 'tall':
-        return 'row-span-2';
+        return 'lg:row-span-2'; // Only span rows on lg and up
       case 'wide':
-        return 'col-span-2';
+        return 'lg:col-span-2'; // Only span columns on lg and up
       case 'square':
       default:
         return '';
@@ -197,7 +245,7 @@ export default function Portfolio() {
   };
 
   return (
-    <section id="portfolio" className={`py-20 relative overflow-hidden ${themeClasses.bgPrimary}`}>
+    <section id="portfolio" className={`py-12 sm:py-16 md:py-20 relative overflow-hidden ${themeClasses.bgPrimary}`}>
       {/* Background Elements */}
       <div className={`absolute inset-0 ${themeClasses.bgPrimary} pointer-events-none`}>
         <div className="absolute inset-0 opacity-30">
@@ -217,13 +265,49 @@ export default function Portfolio() {
           </p>
         </div>
 
-        {/* Pinterest-style Masonry Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 auto-rows-[200px] sm:auto-rows-[240px] md:auto-rows-[280px] gap-3 sm:gap-4">
+        {/* Grid - 2 columns on mobile (matching testimonials), masonry on desktop */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 lg:auto-rows-[280px] gap-3 sm:gap-4 md:gap-6 max-w-7xl mx-auto">
           {projects.map((project, index) => {
             const isVisible = visibleItems.has(index);
             const aspectClass = getAspectRatioClass(project.aspectRatio);
             const hasVideo = project.videoUrl && project.videoUrl.trim() !== '';
             const videoSrc = getVideoStreamUrl(project.videoUrl);
+
+            // Handle video play - pause all other videos
+            const handleVideoPlay = () => {
+              // Pause all other portfolio videos
+              Object.keys(portfolioVideoRefs.current).forEach((id) => {
+                const videoId = Number(id);
+                if (videoId !== project.id && portfolioVideoRefs.current[videoId]) {
+                  portfolioVideoRefs.current[videoId]?.pause();
+                  setPlayingVideos((prev) => {
+                    const newSet = new Set(prev);
+                    newSet.delete(videoId);
+                    return newSet;
+                  });
+                }
+              });
+              setPlayingVideoId(project.id);
+              setPlayingVideos((prev) => new Set(prev).add(project.id));
+            };
+
+            // Handle video pause
+            const handleVideoPause = () => {
+              setPlayingVideos((prev) => {
+                const newSet = new Set(prev);
+                newSet.delete(project.id);
+                return newSet;
+              });
+            };
+
+            // Get video element ref callback
+            const setVideoRef = (videoElement: HTMLVideoElement | null) => {
+              if (videoElement) {
+                portfolioVideoRefs.current[project.id] = videoElement;
+              } else {
+                delete portfolioVideoRefs.current[project.id];
+              }
+            };
             
             return (
               <div
@@ -232,68 +316,101 @@ export default function Portfolio() {
                   itemsRef.current[index] = el;
                 }}
                 data-index={index}
-                onClick={() => hasVideo && setSelectedVideo(index)}
-                className={`group relative overflow-hidden rounded-2xl ${themeClasses.cardBg} ${themeClasses.cardBorder} border backdrop-blur-sm ${hasVideo ? 'cursor-pointer' : 'cursor-default'}
+                data-project-id={project.id}
+                className={`group relative ${themeClasses.cardBg} ${themeClasses.cardBorder} border rounded-xl overflow-hidden ${themeClasses.shadowHover} transition-all duration-500 active:scale-[0.98] sm:hover:scale-[1.02] sm:hover:shadow-2xl
                   ${aspectClass}
-                  transition-all duration-700 ease-out
-                  opacity-100 scale-100
                 `}
                 style={{
                   transitionDelay: `${index * 100}ms`,
                 }}
               >
-                {/* Project Video Thumbnail or Image */}
-                <div className="relative w-full h-full overflow-hidden">
-                  {hasVideo && isDirectVideo(project.videoUrl) && videoSrc ? (
-                    // Use optimized ThumbnailVideo for R2/local videos
-                    <ThumbnailVideo
-                      src={videoSrc}
-                      alt={project.title}
-                      playOnHover={true}
-                    />
+                {/* Project Video or Image */}
+                <div className={`relative w-full overflow-hidden bg-black ${
+                  project.aspectRatio === 'wide' 
+                    ? 'aspect-[9/16] lg:aspect-auto lg:h-full' 
+                    : 'aspect-[9/16] lg:aspect-auto lg:h-full'
+                }`}>
+                  {hasVideo && videoSrc ? (
+                    <>
+                      {/* Use VideoPlayer for inline video playback */}
+                      <div className="relative w-full h-full z-0">
+                        <VideoPlayer
+                          src={videoSrc}
+                          poster={getImageUrl(project.image)}
+                          title={project.title}
+                          aspectRatio="auto"
+                          objectFit="cover"
+                          muted={false}
+                          loop
+                          controls={true}
+                          preload="metadata"
+                          className="w-full h-full"
+                          onPlay={handleVideoPlay}
+                          onPause={handleVideoPause}
+                          setVideoRef={setVideoRef}
+                        />
+                      </div>
+                      {/* Gradient Overlay - only at bottom for text readability, doesn't block controls */}
+                      <div className="absolute bottom-0 left-0 right-0 h-1/2 bg-gradient-to-t from-black/95 via-black/60 to-transparent pointer-events-none z-10"></div>
+                      
+                      {/* Play/Pause Button - Only visible on hover */}
+                      <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-30 pointer-events-none">
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            const video = portfolioVideoRefs.current[project.id];
+                            if (video) {
+                              if (video.paused) {
+                                handleVideoPlay();
+                                video.play().catch(() => {});
+                              } else {
+                                video.pause();
+                                handleVideoPause();
+                              }
+                            }
+                          }}
+                          className="pointer-events-auto w-14 h-14 sm:w-16 sm:h-16 min-w-[56px] min-h-[56px] bg-black/60 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-black/80 active:scale-95 transition-all duration-200 shadow-xl"
+                          aria-label={playingVideos.has(project.id) ? 'Pause video' : 'Play video'}
+                        >
+                          {playingVideos.has(project.id) ? (
+                            // Pause icon
+                            <svg className="w-6 h-6 sm:w-7 sm:h-7 text-white" fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zM7 8a1 1 0 012 0v4a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v4a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
+                            </svg>
+                          ) : (
+                            // Play icon
+                            <svg className="w-6 h-6 sm:w-7 sm:h-7 text-white ml-0.5" fill="currentColor" viewBox="0 0 20 20">
+                              <path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z" />
+                            </svg>
+                          )}
+                        </button>
+                      </div>
+                    </>
                   ) : (
-                    // Fallback to image
-                    <img
-                      src={project.image || 'https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=800&h=600&fit=crop'}
-                      alt={project.title}
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 opacity-90"
-                      loading="lazy"
-                    />
+                    <div className={`absolute inset-0 flex items-center justify-center ${themeClasses.bgTertiary}`}>
+                      <div className="text-center p-3">
+                        <svg className="w-8 h-8 sm:w-10 sm:h-10 text-gray-500 mx-auto mb-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                        </svg>
+                        <p className={`text-xs sm:text-sm ${themeClasses.textSecondary}`}>
+                          Video coming soon
+                        </p>
+                      </div>
+                    </div>
                   )}
-                  
-                  {/* Gradient Overlay */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-60 group-hover:opacity-90 transition-opacity duration-300"></div>
                 </div>
 
-                {/* Content Overlay */}
-                <div className="absolute inset-0 flex flex-col justify-end p-6 transform translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
-                  <h3 className={`${themeClasses.textWhite} text-xl md:text-2xl font-bold mb-2 drop-shadow-lg`}>
+                {/* Content Overlay - Portfolio title */}
+                <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-6 z-20 pointer-events-none">
+                  <h3 className={`${themeClasses.textWhite} text-xs sm:text-sm font-semibold drop-shadow-lg truncate`}>
                     {project.title}
                   </h3>
-                  <div className={`flex items-center ${themeClasses.textWhite}/90 text-sm drop-shadow-lg`}>
-                    <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                      <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
-                      <path fillRule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clipRule="evenodd" />
-                    </svg>
-                    {project.views} views
-                  </div>
                 </div>
 
-                {/* Play Button - Only show if video exists */}
-                {hasVideo && (
-                  <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 group-hover:scale-110 transition-all duration-300">
-                    <div className={`${themeClasses.gradient} w-16 h-16 rounded-full flex items-center justify-center ${themeClasses.shadowPurple} shadow-2xl`}>
-                      <svg className={`w-8 h-8 ${themeClasses.textWhite} ml-1`} fill="currentColor" viewBox="0 0 20 20">
-                        <path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z" />
-                      </svg>
-                    </div>
-                  </div>
-                )}
-
-                {/* Hover Border Glow */}
-                <div className={`absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none`}
+                {/* Hover Glow Effect */}
+                <div className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
                   style={{
-                    boxShadow: '0 0 30px rgba(168, 85, 247, 0.4), inset 0 0 30px rgba(168, 85, 247, 0.1)'
+                    boxShadow: '0 0 30px rgba(168, 85, 247, 0.25), inset 0 0 30px rgba(168, 85, 247, 0.08)'
                   }}
                 ></div>
               </div>
@@ -301,237 +418,8 @@ export default function Portfolio() {
           })}
         </div>
 
-        {/* View More Button */}
-        <div className="text-center mt-12">
-          <button className={`${themeClasses.buttonPrimary} px-8 py-4 rounded-full font-semibold hover:scale-105 transition-all duration-300`}>
-            View All Projects
-          </button>
-        </div>
+   
       </div>
-
-      {/* Video Modal - Sophisticated Cinema Style */}
-      {selectedVideo !== null && projects[selectedVideo]?.videoUrl && (
-        <div 
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 md:p-8 animate-fade-in"
-          onClick={() => setSelectedVideo(null)}
-        >
-          {/* Backdrop with gradient */}
-          <div className="absolute inset-0 bg-gradient-to-br from-black/95 via-purple-950/30 to-black/95 backdrop-blur-xl"></div>
-          
-          {/* Floating particles */}
-          <div className="absolute inset-0 overflow-hidden pointer-events-none">
-            <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-purple-500/10 rounded-full blur-3xl animate-pulse"></div>
-            <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
-          </div>
-
-          {/* Close button */}
-          <button
-            onClick={() => setSelectedVideo(null)}
-            className="absolute top-4 sm:top-6 right-4 sm:right-6 z-20 group"
-            aria-label="Close video"
-          >
-            <div className="relative w-12 h-12 rounded-full bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center transition-all duration-300 group-hover:bg-white/20 group-hover:scale-110 group-hover:border-white/40">
-              <svg className="w-6 h-6 text-white transition-transform duration-300 group-hover:rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </div>
-          </button>
-
-          {/* Navigation Arrows */}
-          {(() => {
-            const videosWithContent = projects.filter(p => p.videoUrl && p.videoUrl.trim() !== '');
-            const currentVideoIndex = videosWithContent.findIndex(p => p.id === projects[selectedVideo].id);
-            const hasPrev = currentVideoIndex > 0;
-            const hasNext = currentVideoIndex < videosWithContent.length - 1;
-            
-            return (
-              <>
-                {hasPrev && (
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      const prevVideo = videosWithContent[currentVideoIndex - 1];
-                      const prevIndex = projects.findIndex(p => p.id === prevVideo.id);
-                      setSelectedVideo(prevIndex);
-                    }}
-                    className="absolute left-4 sm:left-8 top-1/2 -translate-y-1/2 z-20 group"
-                    aria-label="Previous video"
-                  >
-                    <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center transition-all duration-300 group-hover:bg-white/20 group-hover:scale-110 group-hover:-translate-x-1">
-                      <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                      </svg>
-                    </div>
-                  </button>
-                )}
-                
-                {hasNext && (
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      const nextVideo = videosWithContent[currentVideoIndex + 1];
-                      const nextIndex = projects.findIndex(p => p.id === nextVideo.id);
-                      setSelectedVideo(nextIndex);
-                    }}
-                    className="absolute right-4 sm:right-8 top-1/2 -translate-y-1/2 z-20 group"
-                    aria-label="Next video"
-                  >
-                    <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center transition-all duration-300 group-hover:bg-white/20 group-hover:scale-110 group-hover:translate-x-1">
-                      <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                      </svg>
-                    </div>
-                  </button>
-                )}
-              </>
-            );
-          })()}
-
-          {/* Main Modal Container */}
-          <div 
-            className="relative w-full max-w-5xl z-10 animate-slide-in"
-            onClick={(e) => e.stopPropagation()}
-          >
-            {/* Cinema Frame */}
-            <div className="relative rounded-2xl sm:rounded-3xl overflow-hidden">
-              {/* Gradient Border Effect */}
-              <div className="absolute -inset-[1px] bg-gradient-to-r from-purple-500 via-blue-500 to-pink-500 rounded-2xl sm:rounded-3xl opacity-60"></div>
-              
-              {/* Inner Container */}
-              <div className={`relative ${themeClasses.cardBg} rounded-2xl sm:rounded-3xl overflow-hidden`}>
-                {/* Video Header */}
-                <div className="absolute top-0 left-0 right-0 z-10 p-4 sm:p-6 bg-gradient-to-b from-black/80 via-black/40 to-transparent pointer-events-none">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-white drop-shadow-lg">
-                        {projects[selectedVideo].title}
-                      </h3>
-                      <div className="flex items-center gap-3 mt-1">
-                        <span className="flex items-center text-white/80 text-xs sm:text-sm">
-                          <svg className="w-4 h-4 mr-1.5" fill="currentColor" viewBox="0 0 20 20">
-                            <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
-                            <path fillRule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clipRule="evenodd" />
-                          </svg>
-                          {projects[selectedVideo].views}
-                        </span>
-                        <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse"></span>
-                        <span className="text-white/60 text-xs sm:text-sm">Now Playing</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Video Player Container */}
-                {(() => {
-                  const embedUrl = getVideoStreamUrl(projects[selectedVideo].videoUrl);
-                  const isDirect = isDirectVideo(projects[selectedVideo].videoUrl);
-                  
-                  if (embedUrl && isDirect) {
-                    // Use our optimized VideoPlayer for direct videos
-                    return (
-                      <VideoPlayer
-                        src={embedUrl}
-                        title={projects[selectedVideo].title}
-                        autoPlay={true}
-                        muted={false}
-                        controls={true}
-                        preload="auto"
-                        className="w-full"
-                      />
-                    );
-                  } else if (embedUrl) {
-                    // Embed iframe for YouTube/Vimeo/Drive
-                    return (
-                      <div className="relative w-full bg-black" style={{ paddingBottom: '56.25%' }}>
-                        <iframe
-                          src={embedUrl}
-                          className="absolute top-0 left-0 w-full h-full"
-                          allow="autoplay; encrypted-media; fullscreen"
-                          allowFullScreen
-                          title={projects[selectedVideo].title}
-                        />
-                      </div>
-                    );
-                  } else {
-                    // Error state
-                    return (
-                      <div className="relative w-full bg-black" style={{ paddingBottom: '56.25%' }}>
-                        <div className={`absolute inset-0 flex items-center justify-center ${themeClasses.bgTertiary}`}>
-                          <div className="text-center">
-                            <svg className="w-16 h-16 text-gray-500 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                            </svg>
-                            <p className={`${themeClasses.textSecondary} text-center px-4`}>
-                              Unable to load video
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                    );
-                  }
-                })()}
-
-                {/* Video Footer */}
-                <div className={`p-4 sm:p-5 border-t ${themeClasses.border} bg-gradient-to-b ${themeClasses.cardBg}`}>
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-4">
-                      <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full ${themeClasses.bgTertiary}`}>
-                        <div className="w-2 h-2 rounded-full bg-gradient-to-r from-purple-500 to-blue-500 animate-pulse"></div>
-                        <span className={`text-xs sm:text-sm font-medium ${themeClasses.textSecondary}`}>
-                          HD Quality
-                        </span>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center gap-2 sm:gap-3">
-                      <button className={`p-2 sm:p-2.5 rounded-full ${themeClasses.bgTertiary} ${themeClasses.textSecondary} hover:${themeClasses.textPrimary} transition-colors duration-200`} title="Share">
-                        <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
-                        </svg>
-                      </button>
-                      <button className={`p-2 sm:p-2.5 rounded-full ${themeClasses.bgTertiary} ${themeClasses.textSecondary} hover:text-red-500 transition-colors duration-200`} title="Like">
-                        <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                        </svg>
-                      </button>
-                      <button 
-                        onClick={() => setSelectedVideo(null)}
-                        className={`hidden sm:flex items-center gap-2 px-4 py-2 rounded-full ${themeClasses.gradient} text-white font-medium text-sm hover:opacity-90 transition-opacity duration-200`}
-                      >
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                        </svg>
-                        Close
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Video Counter */}
-            <div className="flex justify-center mt-4 sm:mt-6">
-              <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-md border border-white/20">
-                {projects.filter(p => p.videoUrl && p.videoUrl.trim() !== '').map((project) => (
-                  <button
-                    key={project.id}
-                    onClick={() => {
-                      const projectIndex = projects.findIndex(p => p.id === project.id);
-                      setSelectedVideo(projectIndex);
-                    }}
-                    className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                      project.id === projects[selectedVideo].id 
-                        ? 'w-6 bg-gradient-to-r from-purple-500 to-blue-500' 
-                        : 'bg-white/40 hover:bg-white/60'
-                    }`}
-                    aria-label={`Go to ${project.title}`}
-                  />
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
     </section>
   );
 }

@@ -98,7 +98,7 @@ export default function HowItWorks() {
       ref={sectionRef}
       id="how-it-works" 
       className={`py-12 sm:py-16 md:py-20 relative ${themeClasses.bgPrimary}`}
-      style={{ minHeight: `${steps.length * 60}vh` }}
+      style={{ minHeight: typeof window !== 'undefined' && window.innerWidth >= 768 ? `${steps.length * 60}vh` : 'auto' }}
     >
       {/* Background Elements */}
       <div className={`absolute inset-0 ${themeClasses.bgSecondary} pointer-events-none`}>
@@ -117,36 +117,36 @@ export default function HowItWorks() {
           </p>
         </div>
 
-        {/* Stacked Cards */}
-        <div className="max-w-4xl mx-auto relative" style={{ minHeight: `${steps.length * 50}vh` }}>
+        {/* Stacked Cards - Sticky on desktop, regular flow on mobile */}
+        <div className="max-w-4xl mx-auto relative md:min-h-[250vh]">
           {steps.map((step, index) => (
             <div
               key={index}
               ref={(el) => {
                 if (el) cardsRef.current[index] = el;
               }}
-              className="sticky mb-8"
+              className="relative md:sticky mb-4 sm:mb-6 md:mb-8"
               style={{
-                top: `${140 + (index * 8)}px`,
+                top: typeof window !== 'undefined' && window.innerWidth >= 768 ? `${100 + (index * 8)}px` : 'auto',
                 transformOrigin: 'center top',
               }}
             >
-              <div className={`${themeClasses.cardBg} ${themeClasses.cardBorder} border-2 backdrop-blur-xl rounded-3xl p-8 md:p-12 shadow-2xl`}>
+              <div className={`${themeClasses.cardBg} ${themeClasses.cardBorder} border-2 backdrop-blur-xl rounded-2xl sm:rounded-3xl p-5 sm:p-6 md:p-8 lg:p-12 shadow-xl md:shadow-2xl`}>
                 {/* Step Number Badge */}
-                <div className={`inline-flex items-center justify-center w-16 h-16 ${themeClasses.gradient} rounded-2xl mb-6 ${themeClasses.shadowPurple}`}>
-                  <span className={`text-2xl font-bold ${themeClasses.textWhite}`}>{step.number}</span>
+                <div className={`inline-flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 ${themeClasses.gradient} rounded-xl sm:rounded-2xl mb-4 sm:mb-6 ${themeClasses.shadowPurple}`}>
+                  <span className={`text-lg sm:text-xl md:text-2xl font-bold ${themeClasses.textWhite}`}>{step.number}</span>
                 </div>
 
                 {/* Icon */}
-                <div className={`mb-6 ${themeClasses.textPrimary}`}>
+                <div className={`mb-4 sm:mb-6 ${themeClasses.textPrimary} [&>svg]:w-8 [&>svg]:h-8 sm:[&>svg]:w-10 sm:[&>svg]:h-10 md:[&>svg]:w-12 md:[&>svg]:h-12`}>
                       {step.icon}
                 </div>
 
                 {/* Content */}
-                <h3 className={`text-3xl md:text-4xl font-bold ${themeClasses.textPrimary} mb-4`}>
+                <h3 className={`text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold ${themeClasses.textPrimary} mb-2 sm:mb-3 md:mb-4`}>
                     {step.title}
                   </h3>
-                <p className={`${themeClasses.textSecondary} text-lg md:text-xl leading-relaxed`}>
+                <p className={`${themeClasses.textSecondary} text-sm sm:text-base md:text-lg lg:text-xl leading-relaxed`}>
                     {step.description}
                   </p>
               </div>
@@ -155,10 +155,10 @@ export default function HowItWorks() {
         </div>
 
         {/* CTA */}
-        <div className="text-center mt-12">
+        <div className="text-center mt-8 sm:mt-10 md:mt-12">
           <a
             href="/contact"
-            className={`${themeClasses.buttonPrimary} px-8 py-4 rounded-full font-semibold inline-flex items-center hover:scale-105 transition-all duration-300`}
+            className={`${themeClasses.buttonPrimary} w-full sm:w-auto px-6 sm:px-8 py-3.5 sm:py-4 min-h-[48px] rounded-full font-semibold inline-flex items-center justify-center active:scale-95 sm:hover:scale-105 transition-all duration-300`}
           >
             Start Your Project Today
             <svg className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">

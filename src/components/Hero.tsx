@@ -1,8 +1,9 @@
 'use client';
 
 import Link from 'next/link';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useTheme } from './ThemeProvider';
+import VideoPlayer from './VideoPlayer';
 
 interface FloatPosition {
   left: number;
@@ -14,6 +15,14 @@ export default function Hero() {
   const { themeClasses } = useTheme();
   const [floatPositions, setFloatPositions] = useState<FloatPosition[]>([]);
   const [isClient, setIsClient] = useState(false);
+  const videoContainerRef = useRef<HTMLDivElement>(null);
+  const heroVideoRef = useRef<HTMLVideoElement | null>(null);
+  const wasPlayingRef = useRef(false);
+
+  // Callback to get video element reference
+  const setHeroVideoRef = useCallback((element: HTMLVideoElement | null) => {
+    heroVideoRef.current = element;
+  }, []);
 
   // Generate random positions only on client side to avoid hydration mismatch
   useEffect(() => {
@@ -26,8 +35,41 @@ export default function Hero() {
     setFloatPositions(positions);
   }, []);
 
+  // Intersection Observer to pause video when out of view
+  useEffect(() => {
+    const videoContainer = videoContainerRef.current;
+    if (!videoContainer) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          const video = heroVideoRef.current;
+          if (!video) return;
+
+          if (entry.isIntersecting) {
+            // Video is in view - resume if it was playing before
+            if (wasPlayingRef.current) {
+              video.play().catch(() => {});
+            }
+          } else {
+            // Video is out of view - pause it
+            wasPlayingRef.current = !video.paused;
+            video.pause();
+          }
+        });
+      },
+      { threshold: 0.3 } // Trigger when 30% of video is visible
+    );
+
+    observer.observe(videoContainer);
+
+    return () => {
+      observer.disconnect();
+    };
+  }, []);
+
   return (
-    <section className={`relative min-h-[85vh] flex items-center overflow-hidden pt-24 pb-12 ${themeClasses.bgPrimary}`}>
+    <section className={`relative min-h-fit lg:min-h-[85vh] flex items-center overflow-hidden pt-20 sm:pt-24 pb-8 sm:pb-12 ${themeClasses.bgPrimary}`}>
       {/* Dynamic Gradient Background */}
       <div className={`absolute inset-0 ${themeClasses.heroBg}`}></div>
 
@@ -101,12 +143,12 @@ export default function Hero() {
         </div>
       )}
 
-      <div className="container mx-auto px-4 sm:px-6 py-6 sm:py-8 relative z-10">
-        <div className="grid lg:grid-cols-2 gap-6 lg:gap-8 items-center">
+      <div className="container mx-auto px-4 sm:px-6 py-4 sm:py-6 lg:py-8 relative z-10">
+        <div className="flex flex-col lg:grid lg:grid-cols-2 gap-4 sm:gap-6 lg:gap-8 items-center">
           {/* Left Content */}
-          <div className="max-w-xl flex flex-col justify-center text-center lg:text-left">
+          <div className="w-full max-w-xl mx-auto lg:mx-0 flex flex-col justify-center text-center lg:text-left">
             {/* Badge */}
-            <div className="relative mb-6 animate-fade-in">
+            <div className="relative mb-4 sm:mb-6 animate-fade-in">
               <div className={`inline-flex items-center px-4 py-2 ${themeClasses.cardBg} border ${themeClasses.cardBorder} ${themeClasses.shadowHover} text-xs font-semibold ${themeClasses.textPrimary} transform hover:scale-105 transition-all duration-300`}>
                 <div className="flex items-center space-x-2">
                   <div className="relative">
@@ -138,15 +180,15 @@ export default function Hero() {
             </p>
 
             {/* CTA Buttons */}
-            <div className="flex flex-col sm:flex-row gap-2 sm:gap-2.5 mb-4 sm:mb-6 animate-fade-in-up animation-delay-400 items-center lg:items-start">
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-2.5 mb-4 sm:mb-6 animate-fade-in-up animation-delay-400 items-center lg:items-start w-full sm:w-auto">
               <Link
                 href="/contact"
-                className={`group relative px-6 py-2.5 rounded-full text-sm font-semibold overflow-hidden transition-all duration-300 hover:scale-105 ${themeClasses.shadowPurple} flex items-center justify-center ${themeClasses.buttonPrimary}`}
+                className={`group relative w-full sm:w-auto px-6 py-3 sm:py-2.5 min-h-[48px] sm:min-h-0 rounded-full text-sm font-semibold overflow-hidden transition-all duration-300 active:scale-95 sm:hover:scale-105 ${themeClasses.shadowPurple} flex items-center justify-center ${themeClasses.buttonPrimary}`}
               >
                 <span className={`relative ${themeClasses.textWhite} flex items-center`}>
                   Start Your Project
                   <svg
-                    className="w-3.5 h-3.5 ml-2 group-hover:translate-x-1 transition-transform"
+                    className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -161,13 +203,13 @@ export default function Hero() {
                 </span>
               </Link>
               <Link
-                href="/pricing"
-                className={`group relative px-6 py-2.5 rounded-full text-sm font-semibold transition-all duration-300 hover:scale-105 overflow-hidden bg-gradient-to-r from-green-600 to-emerald-600 text-white hover:from-green-700 hover:to-emerald-700 shadow-lg hover:shadow-xl flex items-center justify-center`}
+                href="/contact#book-call"
+                className={`group relative w-full sm:w-auto px-6 py-3 sm:py-2.5 min-h-[48px] sm:min-h-0 rounded-full text-sm font-semibold transition-all duration-300 active:scale-95 sm:hover:scale-105 overflow-hidden bg-gradient-to-r from-green-600 to-emerald-600 text-white hover:from-green-700 hover:to-emerald-700 shadow-lg hover:shadow-xl flex items-center justify-center`}
               >
                 <span className="relative flex items-center">
                   Book a Call
                   <svg
-                    className="w-3.5 h-3.5 ml-2 group-hover:scale-110 transition-transform"
+                    className="w-4 h-4 ml-2 group-hover:scale-110 transition-transform"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -183,7 +225,7 @@ export default function Hero() {
               </Link>
               <Link
                 href="/portfolio"
-                className={`group relative px-6 py-2.5 rounded-full text-sm font-semibold transition-all duration-300 hover:scale-105 overflow-hidden ${themeClasses.buttonOutline} flex items-center justify-center`}
+                className={`group relative w-full sm:w-auto px-6 py-3 sm:py-2.5 min-h-[48px] sm:min-h-0 rounded-full text-sm font-semibold transition-all duration-300 active:scale-95 sm:hover:scale-105 overflow-hidden ${themeClasses.buttonOutline} flex items-center justify-center`}
               >
                 <span className="relative">See Our Work</span>
               </Link>
@@ -212,84 +254,66 @@ export default function Hero() {
             </div>
           </div>
 
-          {/* Right Video Demo Section */}
-          <div className="relative hidden lg:block animate-fade-in-up animation-delay-400">
+          {/* Right Video Demo Section - Visible on all screens */}
+          <div className="relative animate-fade-in-up animation-delay-400 mt-6 lg:mt-0">
             {/* Video Container with Film Frame Effect */}
-            <div className="relative max-w-2xl mx-auto">
-              {/* Film Frame Border */}
-              <div className={`absolute -inset-3 ${themeClasses.cardBg} rounded-xl opacity-50`}>
+            <div className="relative max-w-sm sm:max-w-md lg:max-w-2xl mx-auto">
+              {/* Film Frame Border - Hidden on mobile for cleaner look */}
+              <div className={`absolute -inset-2 sm:-inset-3 ${themeClasses.cardBg} rounded-xl opacity-50 hidden sm:block`}>
                 {/* Top perforations */}
-                <div className="absolute top-0 left-0 right-0 flex justify-around px-6 py-1.5">
-                  {[...Array(12)].map((_, i) => (
-                    <div key={`top-${i}`} className="w-1.5 h-1.5 bg-purple-500 rounded-sm" />
+                <div className="absolute top-0 left-0 right-0 flex justify-around px-4 sm:px-6 py-1 sm:py-1.5">
+                  {[...Array(8)].map((_, i) => (
+                    <div key={`top-${i}`} className="w-1 h-1 sm:w-1.5 sm:h-1.5 bg-purple-500 rounded-sm" />
                   ))}
                 </div>
                 {/* Bottom perforations */}
-                <div className="absolute bottom-0 left-0 right-0 flex justify-around px-6 py-1.5">
-                  {[...Array(12)].map((_, i) => (
-                    <div key={`bottom-${i}`} className="w-1.5 h-1.5 bg-blue-500 rounded-sm" />
+                <div className="absolute bottom-0 left-0 right-0 flex justify-around px-4 sm:px-6 py-1 sm:py-1.5">
+                  {[...Array(8)].map((_, i) => (
+                    <div key={`bottom-${i}`} className="w-1 h-1 sm:w-1.5 sm:h-1.5 bg-blue-500 rounded-sm" />
                   ))}
                 </div>
                 {/* Left perforations */}
-                <div className="absolute left-0 top-0 bottom-0 flex flex-col justify-around py-6 px-1.5">
-                  {[...Array(4)].map((_, i) => (
-                    <div key={`left-${i}`} className="w-1.5 h-1.5 bg-purple-500 rounded-sm" />
+                <div className="absolute left-0 top-0 bottom-0 flex flex-col justify-around py-4 sm:py-6 px-1 sm:px-1.5">
+                  {[...Array(3)].map((_, i) => (
+                    <div key={`left-${i}`} className="w-1 h-1 sm:w-1.5 sm:h-1.5 bg-purple-500 rounded-sm" />
                   ))}
                 </div>
                 {/* Right perforations */}
-                <div className="absolute right-0 top-0 bottom-0 flex flex-col justify-around py-6 px-1.5">
-                  {[...Array(4)].map((_, i) => (
-                    <div key={`right-${i}`} className="w-1.5 h-1.5 bg-blue-500 rounded-sm" />
+                <div className="absolute right-0 top-0 bottom-0 flex flex-col justify-around py-4 sm:py-6 px-1 sm:px-1.5">
+                  {[...Array(3)].map((_, i) => (
+                    <div key={`right-${i}`} className="w-1 h-1 sm:w-1.5 sm:h-1.5 bg-blue-500 rounded-sm" />
                   ))}
                 </div>
               </div>
 
-              {/* Video Placeholder */}
-              <div className={`relative aspect-video ${themeClasses.cardBg} rounded-lg overflow-hidden border-2 ${themeClasses.cardBorder} shadow-xl`}>
-                {/* Gradient Overlay */}
-                <div className="absolute inset-0 bg-gradient-to-br from-purple-600/20 via-blue-600/20 to-pink-600/20"></div>
-
-                {/* Demo Video Placeholder */}
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="text-center">
-                    {/* Play Button */}
-                    <div className="relative inline-block mb-3">
-                      <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-blue-600 rounded-full blur-lg opacity-50 animate-pulse"></div>
-                      <button className="relative w-16 h-16 bg-gradient-to-r from-purple-600 to-blue-600 rounded-full flex items-center justify-center hover:scale-110 transition-transform shadow-xl">
-                        <svg className="w-8 h-8 text-white ml-1" fill="currentColor" viewBox="0 0 20 20">
-                          <path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z" />
-                        </svg>
-                      </button>
-                    </div>
-                    <p className={`${themeClasses.textSecondary} text-xs`}>Watch Demo Video</p>
-                    <p className={`${themeClasses.textPrimary} text-[10px] mt-1`}>See our editing in action</p>
-                  </div>
-                </div>
-
-                {/* Timeline at bottom */}
-                <div className="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-black/80 to-transparent p-3">
-                  <div className="flex items-center gap-2 mb-1.5">
-                    <div className="w-full h-0.5 bg-gray-700 rounded-full overflow-hidden">
-                      <div className="w-1/3 h-full bg-gradient-to-r from-purple-600 to-blue-600"></div>
-                    </div>
-                  </div>
-                  <div className="flex justify-between text-[10px] text-gray-400">
-                    <span>0:15</span>
-                    <span>0:45</span>
-                  </div>
-                </div>
+              {/* Video Player */}
+              <div 
+                ref={videoContainerRef}
+                className={`relative aspect-video ${themeClasses.cardBg} rounded-xl sm:rounded-2xl overflow-hidden border sm:border-2 ${themeClasses.cardBorder} shadow-lg sm:shadow-xl`}
+              >
+                <VideoPlayer
+                  src="/api/video/arvedit_homepage.mp4"
+                  title="ArvEdit Demo"
+                  aspectRatio="video"
+                  muted={false}
+                  loop
+                  controls={true}
+                  preload="metadata"
+                  className="w-full h-full rounded-xl sm:rounded-2xl"
+                  setVideoRef={setHeroVideoRef}
+                />
               </div>
 
-              {/* Floating Elements */}
-              <div className="absolute -top-4 -right-4 w-16 h-16 bg-gradient-to-br from-purple-600/30 to-blue-600/30 rounded-full blur-xl animate-pulse"></div>
-              <div className="absolute -bottom-4 -left-4 w-20 h-20 bg-gradient-to-br from-blue-600/30 to-pink-600/30 rounded-full blur-xl animate-pulse animation-delay-2000"></div>
+              {/* Floating Elements - Smaller on mobile */}
+              <div className="absolute -top-2 -right-2 sm:-top-4 sm:-right-4 w-10 h-10 sm:w-16 sm:h-16 bg-gradient-to-br from-purple-600/30 to-blue-600/30 rounded-full blur-xl animate-pulse"></div>
+              <div className="absolute -bottom-2 -left-2 sm:-bottom-4 sm:-left-4 w-12 h-12 sm:w-20 sm:h-20 bg-gradient-to-br from-blue-600/30 to-pink-600/30 rounded-full blur-xl animate-pulse animation-delay-2000"></div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Scroll Indicator */}
-      <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 animate-bounce">
+      {/* Scroll Indicator - Hidden on very small mobile screens */}
+      <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 animate-bounce hidden sm:block">
         <div className={`${themeClasses.statBg} backdrop-blur-sm rounded-full p-2 border ${themeClasses.statBorder} hover:border-purple-400 transition-all`}>
           <svg
             className="w-4 h-4 text-purple-400"

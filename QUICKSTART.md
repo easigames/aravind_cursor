@@ -280,7 +280,7 @@ src/
 
 - Check the main [README.md](README.md) for detailed documentation
 - Review [FEATURES.md](FEATURES.md) for complete feature list
-- Contact: hello@videoedit.com
+- Contact: arvind.sri2025@gmail.com
 
 ---
 

@@ -2,7 +2,7 @@
 
 import Header from '@/components/Header';
 import HowItWorks from '@/components/HowItWorks';
-import BookCall from '@/components/BookCall';
+import FAQ from '@/components/FAQ';
 import Footer from '@/components/Footer';
 import { useTheme } from '@/components/ThemeProvider';
 
@@ -14,7 +14,7 @@ export default function PricingPage() {
       <Header />
       <div className="pt-16 sm:pt-20 animate-fade-in-up">
         <HowItWorks />
-        <BookCall />
+        <FAQ />
       </div>
       <Footer />
     </div>

@@ -218,7 +218,7 @@ This project is open source and available under the MIT License.
 ## 📧 Contact
 
 For questions or support, please contact:
-- Email: hello@videoedit.com
+- Email: arvind.sri2025@gmail.com
 - Website: [Your Website URL]
 
 ---

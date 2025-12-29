@@ -14,7 +14,11 @@ interface VideoPlayerProps {
   preload?: 'none' | 'metadata' | 'auto';
   onLoadedMetadata?: () => void;
   onError?: () => void;
-  aspectRatio?: 'video' | 'square' | 'portrait';
+  onPlay?: () => void;
+  onPause?: () => void;
+  setVideoRef?: (element: HTMLVideoElement | null) => void;
+  aspectRatio?: 'video' | 'square' | 'portrait' | 'auto';
+  objectFit?: 'contain' | 'cover';
 }
 
 /**
@@ -40,7 +44,11 @@ export default function VideoPlayer({
   preload = 'metadata',
   onLoadedMetadata,
   onError,
+  onPlay,
+  onPause,
+  setVideoRef,
   aspectRatio = 'video',
+  objectFit = 'contain',
 }: VideoPlayerProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -57,6 +65,18 @@ export default function VideoPlayer({
   useEffect(() => {
     setIsVisible(true);
   }, []);
+
+  // Expose video ref to parent component
+  useEffect(() => {
+    if (setVideoRef) {
+      setVideoRef(videoRef.current);
+    }
+    return () => {
+      if (setVideoRef) {
+        setVideoRef(null);
+      }
+    };
+  }, [setVideoRef]);
 
   // Show first frame as thumbnail when video metadata loads
   useEffect(() => {
@@ -102,7 +122,18 @@ export default function VideoPlayer({
   const handlePlaying = useCallback(() => {
     setIsBuffering(false);
     setShowPoster(false);
-  }, []);
+    onPlay?.();
+  }, [onPlay]);
+
+  // Hide poster when video starts playing (on play event)
+  const handlePlay = useCallback(() => {
+    setShowPoster(false);
+    onPlay?.();
+  }, [onPlay]);
+
+  const handlePause = useCallback(() => {
+    onPause?.();
+  }, [onPause]);
 
   const handleError = useCallback(() => {
     setHasError(true);
@@ -126,6 +157,9 @@ export default function VideoPlayer({
 
   // Get aspect ratio class
   const getAspectRatioClass = () => {
+    if (aspectRatio === 'auto') {
+      return ''; // No aspect ratio constraint - let parent container handle it
+    }
     switch (aspectRatio) {
       case 'portrait':
         return 'aspect-[9/16]';
@@ -144,7 +178,7 @@ export default function VideoPlayer({
       {/* Poster Image - Shows immediately while video loads */}
       {poster && showPoster && !hasError && (
         <div 
-          className={`absolute inset-0 bg-cover bg-center transition-opacity duration-300 z-20 ${isLoading || isBuffering || !hasLoadedFirstFrame ? 'opacity-100' : 'opacity-0'}`}
+          className={`absolute inset-0 bg-cover bg-center transition-opacity duration-300 z-10 pointer-events-none ${isLoading || isBuffering || !hasLoadedFirstFrame ? 'opacity-100' : 'opacity-0'}`}
           style={{ backgroundImage: `url(${poster})` }}
         />
       )}
@@ -165,18 +199,18 @@ export default function VideoPlayer({
 
       {/* Error State */}
       {hasError && (
-        <div className="absolute inset-0 flex flex-col items-center justify-center bg-gray-900/90">
-          <svg className="w-16 h-16 text-gray-500 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div className="absolute inset-0 flex flex-col items-center justify-center bg-gray-900/90 p-4">
+          <svg className="w-12 h-12 sm:w-16 sm:h-16 text-gray-500 mb-3 sm:mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
           </svg>
-          <p className="text-gray-400 text-sm">Unable to load video</p>
+          <p className="text-gray-400 text-xs sm:text-sm text-center">Unable to load video</p>
           <button 
             onClick={() => {
               setHasError(false);
               setIsLoading(true);
               videoRef.current?.load();
             }}
-            className="mt-3 px-4 py-2 bg-purple-600 hover:bg-purple-700 rounded-lg text-white text-sm transition-colors"
+            className="mt-3 px-5 py-2.5 min-h-[44px] bg-purple-600 hover:bg-purple-700 active:scale-95 rounded-lg text-white text-sm transition-colors"
           >
             Retry
           </button>
@@ -187,7 +221,7 @@ export default function VideoPlayer({
       {isVisible && !hasError && (
         <video
           ref={videoRef}
-          className="w-full h-full object-contain"
+          className={`w-full h-full relative z-0 ${objectFit === 'cover' ? 'object-cover' : 'object-contain'}`}
           src={src}
           poster={poster}
           autoPlay={autoPlay}
@@ -210,6 +244,8 @@ export default function VideoPlayer({
           onCanPlay={handleCanPlay}
           onWaiting={handleWaiting}
           onPlaying={handlePlaying}
+          onPlay={handlePlay}
+          onPause={handlePause}
           onProgress={handleProgress}
           onError={handleError}
         >
@@ -316,11 +352,11 @@ export function ThumbnailVideo({
         />
       )}
 
-      {/* Hover play indicator */}
+      {/* Hover/Touch play indicator */}
       {playOnHover && isLoaded && !hasError && (
         <div className={`absolute inset-0 flex items-center justify-center transition-opacity duration-300 ${isHovered ? 'opacity-0' : 'opacity-100'} pointer-events-none`}>
-          <div className="w-12 h-12 bg-black/50 backdrop-blur-sm rounded-full flex items-center justify-center">
-            <svg className="w-5 h-5 text-white ml-0.5" fill="currentColor" viewBox="0 0 20 20">
+          <div className="w-11 h-11 sm:w-12 sm:h-12 min-w-[44px] min-h-[44px] bg-black/50 backdrop-blur-sm rounded-full flex items-center justify-center">
+            <svg className="w-4 h-4 sm:w-5 sm:h-5 text-white ml-0.5" fill="currentColor" viewBox="0 0 20 20">
               <path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z" />
             </svg>
           </div>

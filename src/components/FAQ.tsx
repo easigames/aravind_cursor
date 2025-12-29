@@ -69,26 +69,26 @@ export default function FAQ() {
 
         {/* FAQ Grid */}
         <div className="max-w-4xl mx-auto">
-          <div className="space-y-4">
+          <div className="space-y-3 sm:space-y-4">
             {faqs.map((faq, index) => (
               <div
                 key={index}
-                className={`${themeClasses.cardBg} ${themeClasses.cardHoverBg} backdrop-blur-sm rounded-2xl overflow-hidden ${themeClasses.cardBorder} border transition-all duration-300`}
+                className={`${themeClasses.cardBg} ${themeClasses.cardHoverBg} backdrop-blur-sm rounded-xl sm:rounded-2xl overflow-hidden ${themeClasses.cardBorder} border transition-all duration-300`}
               >
                 <button
                   onClick={() => setOpenIndex(openIndex === index ? null : index)}
-                  className="w-full px-8 py-6 flex items-center justify-between text-left cursor-pointer"
+                  className="w-full px-4 sm:px-6 md:px-8 py-4 sm:py-5 md:py-6 min-h-[56px] flex items-center justify-between text-left cursor-pointer active:bg-black/5"
                 >
-                  <span className={`text-lg font-semibold ${themeClasses.textPrimary} pr-8`}>
+                  <span className={`text-base sm:text-lg font-semibold ${themeClasses.textPrimary} pr-3 sm:pr-6 md:pr-8`}>
                     {faq.question}
                   </span>
                   <div
-                    className={`flex-shrink-0 w-8 h-8 rounded-full ${themeClasses.gradient} ${themeClasses.textWhite} flex items-center justify-center transition-all duration-300 ${
-                      openIndex === index ? 'rotate-180 scale-110' : ''
+                    className={`flex-shrink-0 w-8 h-8 sm:w-9 sm:h-9 min-w-[32px] min-h-[32px] rounded-full ${themeClasses.gradient} ${themeClasses.textWhite} flex items-center justify-center transition-all duration-300 ${
+                      openIndex === index ? 'rotate-180 sm:scale-110' : ''
                     }`}
                   >
                     <svg
-                      className="w-5 h-5"
+                      className="w-4 h-4 sm:w-5 sm:h-5"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -104,11 +104,11 @@ export default function FAQ() {
                 </button>
                 <div
                   className={`overflow-hidden transition-all duration-300 ${
-                    openIndex === index ? 'max-h-96' : 'max-h-0'
+                    openIndex === index ? 'max-h-[500px]' : 'max-h-0'
                   }`}
                 >
-                  <div className="px-8 pb-6">
-                    <p className={`${themeClasses.textSecondary} leading-relaxed`}>
+                  <div className="px-4 sm:px-6 md:px-8 pb-4 sm:pb-5 md:pb-6">
+                    <p className={`${themeClasses.textSecondary} leading-relaxed text-sm sm:text-base`}>
                       {faq.answer}
                     </p>
                   </div>

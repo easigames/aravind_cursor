@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import { useTheme } from './ThemeProvider';
 
 export default function Services() {
@@ -100,59 +101,62 @@ export default function Services() {
             if (isBottomNeighbor) tiltClass = 'rotate-[1deg]';
 
             return (
-            <div
+            <Link
               key={index}
-                onMouseEnter={() => setHoveredIndex(index)}
-                onMouseLeave={() => setHoveredIndex(null)}
-                className={`group relative ${themeClasses.cardBg} ${themeClasses.cardBorder} border backdrop-blur-sm p-8 rounded-2xl transition-all duration-500 ease-out cursor-pointer
-                  ${isHovered ? `scale-105 ${themeClasses.cardHoverBg} shadow-2xl z-20 rotate-0` : ''}
-                  ${isNeighbor ? `scale-95 ${tiltClass}` : ''}
-                  ${isDimmed ? 'scale-90 opacity-40 blur-[1px]' : 'opacity-100'}
-                `}
-                style={{
-                  transformOrigin: 'center',
-                  filter: isDimmed ? 'saturate(0.3)' : 'saturate(1)',
-                }}
-              >
+              href="/contact"
+              onMouseEnter={() => setHoveredIndex(index)}
+              onMouseLeave={() => setHoveredIndex(null)}
+              onTouchStart={() => setHoveredIndex(index)}
+              onTouchEnd={() => setTimeout(() => setHoveredIndex(null), 300)}
+              className={`group relative ${themeClasses.cardBg} ${themeClasses.cardBorder} border backdrop-blur-sm p-5 sm:p-6 md:p-8 rounded-xl sm:rounded-2xl transition-all duration-500 ease-out cursor-pointer block
+                ${isHovered ? `sm:scale-105 ${themeClasses.cardHoverBg} shadow-2xl z-20 rotate-0` : ''}
+                ${isNeighbor ? `sm:scale-95 ${tiltClass}` : ''}
+                ${isDimmed ? 'sm:scale-90 opacity-40 sm:blur-[1px]' : 'opacity-100'}
+              `}
+              style={{
+                transformOrigin: 'center',
+                filter: isDimmed ? 'saturate(0.3)' : 'saturate(1)',
+              }}
+            >
                 {/* Glow effect on hover */}
                 {isHovered && (
                   <div className="absolute inset-0 bg-gradient-to-br from-purple-500/20 to-blue-500/20 rounded-2xl blur-xl -z-10 animate-pulse"></div>
                 )}
 
                 {/* Icon */}
-                <div className={`${themeClasses.gradient} mb-6 w-20 h-20 rounded-2xl flex items-center justify-center transition-all duration-500
-                  ${isHovered ? 'scale-110 rotate-6 shadow-lg' : 'scale-100 rotate-0'}
-                  ${isNeighbor ? 'scale-90' : ''}
+                <div className={`${themeClasses.gradient} mb-4 sm:mb-6 w-14 h-14 sm:w-16 md:w-20 sm:h-16 md:h-20 rounded-xl sm:rounded-2xl flex items-center justify-center transition-all duration-500
+                  ${isHovered ? 'sm:scale-110 sm:rotate-6 shadow-lg' : 'scale-100 rotate-0'}
+                  ${isNeighbor ? 'sm:scale-90' : ''}
                 `}>
-                  <div className={`${themeClasses.textWhite} transition-all duration-500 ${isHovered ? 'scale-110' : ''}`}>
+                  <div className={`${themeClasses.textWhite} transition-all duration-500 ${isHovered ? 'sm:scale-110' : ''} [&>svg]:w-8 [&>svg]:h-8 sm:[&>svg]:w-10 sm:[&>svg]:h-10 md:[&>svg]:w-12 md:[&>svg]:h-12`}>
                   {service.icon}
                 </div>
               </div>
 
                 {/* Title */}
-                <h3 className={`text-2xl font-bold ${themeClasses.textPrimary} mb-4 transition-all duration-300
-                  ${isHovered ? 'text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-blue-600' : ''}
+                <h3 className={`text-lg sm:text-xl md:text-2xl font-bold ${themeClasses.textPrimary} mb-2 sm:mb-3 md:mb-4 transition-all duration-300
+                  ${isHovered ? 'sm:text-transparent sm:bg-clip-text sm:bg-gradient-to-r sm:from-purple-600 sm:to-blue-600' : ''}
                 `}>
                 {service.title}
               </h3>
 
                 {/* Description */}
-                <p className={`${themeClasses.textSecondary} leading-relaxed transition-all duration-300
+                <p className={`${themeClasses.textSecondary} leading-relaxed transition-all duration-300 text-sm sm:text-base
                   ${isHovered ? 'text-opacity-90' : ''}
                 `}>
                 {service.description}
               </p>
 
-                {/* Hover indicator */}
+                {/* Hover indicator - hidden on mobile */}
                 {isHovered && (
-                  <div className={`mt-6 flex items-center ${themeClasses.textPrimary} font-semibold animate-fade-in`}>
+                  <div className={`hidden sm:flex mt-4 sm:mt-6 items-center ${themeClasses.textPrimary} font-semibold animate-fade-in`}>
                     <span>Learn More</span>
                     <svg className="w-5 h-5 ml-2 animate-bounce-x" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
                     </svg>
                   </div>
                 )}
-            </div>
+            </Link>
             );
           })}
         </div>

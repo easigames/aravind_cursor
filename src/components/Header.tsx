@@ -53,7 +53,7 @@ export default function Header() {
     { id: 'portfolio', name: 'Portfolio', href: '/portfolio' },
     { id: 'pricing', name: 'Pricing', href: '/pricing' },
     { id: 'about', name: 'About Us', href: '/about' },
-    { id: 'faq', name: 'FAQ', href: '/faq' },
+    { id: 'contact', name: 'Contact', href: '/contact' },
   ];
 
   // Determine active tab based on current pathname
@@ -147,7 +147,7 @@ export default function Header() {
               onClick={() => setIsMenuOpen(!isMenuOpen)}
               aria-label="Toggle menu"
               aria-expanded={isMenuOpen}
-              className={`relative w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-300 cursor-pointer hover:scale-105 active:scale-95 ${isScrolled
+              className={`relative w-11 h-11 min-w-[44px] min-h-[44px] rounded-xl flex items-center justify-center transition-all duration-300 cursor-pointer hover:scale-105 active:scale-95 ${isScrolled
                   ? `${themeClasses.cardBg} ${themeClasses.cardHoverBg}`
                   : `${themeClasses.glassEffect} ${themeClasses.border} border`
                 }`}
@@ -182,7 +182,7 @@ export default function Header() {
                 <Link
                   key={item.id}
                   href={item.href}
-                  className={`relative flex items-center px-4 py-3 rounded-xl transition-all duration-300 ease-out overflow-hidden active:scale-95 ${isActive
+                  className={`relative flex items-center px-4 py-4 min-h-[48px] rounded-xl transition-all duration-300 ease-out overflow-hidden active:scale-95 ${isActive
                       ? `${themeClasses.textWhite} shadow-lg`
                       : `${themeClasses.headerTextSecondary} hover:${themeClasses.textPrimary}`
                     }`}
@@ -221,7 +221,7 @@ export default function Header() {
             {/* CTA Button */}
             <Link
               href="/contact"
-              className={`flex items-center justify-center space-x-2 px-4 py-3.5 rounded-xl ${themeClasses.gradient} ${themeClasses.textWhite} ${themeClasses.shadow} hover:shadow-xl transition-all duration-300 active:scale-95 font-semibold`}
+              className={`flex items-center justify-center space-x-2 px-4 py-4 min-h-[48px] rounded-xl ${themeClasses.gradient} ${themeClasses.textWhite} ${themeClasses.shadow} hover:shadow-xl transition-all duration-300 active:scale-95 font-semibold`}
               onClick={() => setIsMenuOpen(false)}
             >
               <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">

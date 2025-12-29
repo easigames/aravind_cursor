@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import Header from '@/components/Header';
 import Hero from '@/components/Hero';
 import Footer from '@/components/Footer';
@@ -13,6 +13,11 @@ export default function Home() {
   const [visibleCards, setVisibleCards] = useState<Set<number>>(new Set());
   const [selectedVideo, setSelectedVideo] = useState<number | null>(null);
   const sectionRef = useRef<HTMLDivElement>(null);
+  const [playingTestimonialId, setPlayingTestimonialId] = useState<number | null>(null);
+  const [playingTestimonials, setPlayingTestimonials] = useState<Set<number>>(new Set());
+  const testimonialVideoRefs = useRef<{ [key: number]: HTMLVideoElement | null }>({});
+  const testimonialContainerRefs = useRef<{ [key: number]: HTMLDivElement | null }>({});
+  const wasPlayingRefs = useRef<{ [key: number]: boolean }>({});
 
   // Helper function to convert Google Drive share link to embed URL
   const convertDriveLink = (url: string | undefined): string | null => {
@@ -123,6 +128,17 @@ export default function Home() {
       description: "SEO-friendly transcripts for repurposing, captions, blogs, and accessibility.",
       row: "bottom",
       videoUrl: "" // Add your Google Drive link here
+    },
+    {
+      icon: (
+        <svg className={`w-6 h-6 ${themeClasses.textWhite}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+        </svg>
+      ),
+      title: "🎯 Strategic Cuts & Transitions",
+      description: "Precise editing that maintains flow and keeps viewers engaged from start to finish.",
+      row: "bottom",
+      videoUrl: "" // Add your Google Drive link here
     }
   ];
 
@@ -174,7 +190,51 @@ export default function Home() {
     };
   }, [selectedVideo]);
 
-  // Testimonials data - 3 vertical testimonial videos
+  // Intersection Observer to pause testimonial videos when out of view
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          // Get the testimonial ID from the data attribute
+          const testimonialId = Number(entry.target.getAttribute('data-testimonial-id'));
+          const video = testimonialVideoRefs.current[testimonialId];
+          
+          if (!video) return;
+
+          if (entry.isIntersecting) {
+            // Video is in view - resume if it was playing before
+            if (wasPlayingRefs.current[testimonialId]) {
+              video.play().catch(() => {});
+              setPlayingTestimonials((prev) => new Set(prev).add(testimonialId));
+            }
+          } else {
+            // Video is out of view - pause it
+            wasPlayingRefs.current[testimonialId] = !video.paused;
+            video.pause();
+            setPlayingTestimonials((prev) => {
+              const newSet = new Set(prev);
+              newSet.delete(testimonialId);
+              return newSet;
+            });
+          }
+        });
+      },
+      { threshold: 0.3 } // Trigger when 30% of video is visible
+    );
+
+    // Observe all testimonial containers
+    Object.values(testimonialContainerRefs.current).forEach((container) => {
+      if (container) {
+        observer.observe(container);
+      }
+    });
+
+    return () => {
+      observer.disconnect();
+    };
+  }, []);
+
+  // Testimonials data - 4 vertical testimonial videos
   const testimonials = [
     {
       id: 1,
@@ -196,6 +256,13 @@ export default function Home() {
       role: 'Brand Ambassador',
       videoUrl: 'r2:janice_testimonial.mp4', // Replace with your R2 video key or other video URL
       quote: 'He\'s done an amazing job and is really really fast!',
+    },
+    {
+      id: 4,
+      name: 'Kara',
+      role: 'YouTuber',
+      videoUrl: 'r2:Kara_testimonial.mp4', // Replace with your R2 video key or other video URL
+      quote: 'His video creation and programming skills are FANTASTIC!',
     },
   ];
 
@@ -264,8 +331,8 @@ export default function Home() {
             </p>
           </div>
 
-          {/* Testimonial Videos Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 max-w-6xl mx-auto">
+          {/* Testimonial Videos Grid - 4 in a row */}
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6 max-w-7xl mx-auto">
             {testimonials.map((testimonial, index) => {
               const videoSrc = getVideoStreamUrl(testimonial.videoUrl);
               const hasVideo = videoSrc !== null;
@@ -275,16 +342,58 @@ export default function Home() {
                 console.log(`Testimonial ${index + 1} video source:`, videoSrc);
               }
 
+              // Handle video play - pause all other videos
+              const handleVideoPlay = () => {
+                // Pause all other testimonial videos
+                Object.keys(testimonialVideoRefs.current).forEach((id) => {
+                  const videoId = Number(id);
+                  if (videoId !== testimonial.id && testimonialVideoRefs.current[videoId]) {
+                    testimonialVideoRefs.current[videoId]?.pause();
+                    setPlayingTestimonials((prev) => {
+                      const newSet = new Set(prev);
+                      newSet.delete(videoId);
+                      return newSet;
+                    });
+                  }
+                });
+                setPlayingTestimonialId(testimonial.id);
+                setPlayingTestimonials((prev) => new Set(prev).add(testimonial.id));
+              };
+
+              // Handle video pause
+              const handleVideoPause = () => {
+                setPlayingTestimonials((prev) => {
+                  const newSet = new Set(prev);
+                  newSet.delete(testimonial.id);
+                  return newSet;
+                });
+              };
+
+              // Get video element ref callback
+              const setVideoRef = (videoElement: HTMLVideoElement | null) => {
+                if (videoElement) {
+                  testimonialVideoRefs.current[testimonial.id] = videoElement;
+                } else {
+                  delete testimonialVideoRefs.current[testimonial.id];
+                }
+              };
+
               return (
                 <div
                   key={testimonial.id}
-                  className={`group relative ${themeClasses.cardBg} ${themeClasses.cardBorder} border rounded-2xl overflow-hidden ${themeClasses.shadowHover} transition-all duration-500 hover:scale-105 hover:shadow-2xl`}
+                  ref={(el) => {
+                    if (el) {
+                      testimonialContainerRefs.current[testimonial.id] = el;
+                    }
+                  }}
+                  data-testimonial-id={testimonial.id}
+                  className={`group relative ${themeClasses.cardBg} ${themeClasses.cardBorder} border rounded-xl overflow-hidden ${themeClasses.shadowHover} transition-all duration-500 active:scale-[0.98] sm:hover:scale-[1.02] sm:hover:shadow-2xl`}
                 >
                   {/* Video Container - Vertical/Portrait */}
                   <div className="relative w-full aspect-[9/16] bg-black">
                     {hasVideo ? (
                       <>
-                        <div className="relative w-full h-full z-0">
+                        <div className="relative w-full h-full z-0 video-controls-subtle">
                           <VideoPlayer
                             src={videoSrc}
                             title={testimonial.name}
@@ -294,18 +403,54 @@ export default function Home() {
                             controls={true}
                             preload="metadata"
                             className="w-full h-full"
+                            onPlay={handleVideoPlay}
+                            onPause={handleVideoPause}
+                            setVideoRef={setVideoRef}
                           />
                         </div>
-                        {/* Gradient Overlay - only at bottom for text readability, doesn't block controls */}
-                        <div className="absolute bottom-0 left-0 right-0 h-1/2 bg-gradient-to-t from-black/95 via-black/60 to-transparent pointer-events-none z-10"></div>
+                        {/* Gradient Overlay - only at bottom for quote readability, doesn't block controls */}
+                        <div className="absolute bottom-0 left-0 right-0 h-1/3 bg-gradient-to-t from-black/90 via-black/50 to-transparent pointer-events-none z-10"></div>
+                        
+                        {/* Play/Pause Button - Only visible on hover */}
+                        <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-30 pointer-events-none">
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              const video = testimonialVideoRefs.current[testimonial.id];
+                              if (video) {
+                                if (video.paused) {
+                                  handleVideoPlay();
+                                  video.play().catch(() => {});
+                                } else {
+                                  video.pause();
+                                  handleVideoPause();
+                                }
+                              }
+                            }}
+                            className="pointer-events-auto w-14 h-14 sm:w-16 sm:h-16 min-w-[56px] min-h-[56px] bg-black/60 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-black/80 active:scale-95 transition-all duration-200 shadow-xl"
+                            aria-label={playingTestimonials.has(testimonial.id) ? 'Pause video' : 'Play video'}
+                          >
+                            {playingTestimonials.has(testimonial.id) ? (
+                              // Pause icon
+                              <svg className="w-6 h-6 sm:w-7 sm:h-7 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zM7 8a1 1 0 012 0v4a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v4a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
+                              </svg>
+                            ) : (
+                              // Play icon
+                              <svg className="w-6 h-6 sm:w-7 sm:h-7 text-white ml-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z" />
+                              </svg>
+                            )}
+                          </button>
+                        </div>
                       </>
                     ) : (
                       <div className={`absolute inset-0 flex items-center justify-center ${themeClasses.bgTertiary}`}>
-                        <div className="text-center p-4">
-                          <svg className="w-12 h-12 text-gray-500 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <div className="text-center p-3">
+                          <svg className="w-8 h-8 sm:w-10 sm:h-10 text-gray-500 mx-auto mb-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
                           </svg>
-                          <p className={`text-sm ${themeClasses.textSecondary}`}>
+                          <p className={`text-xs sm:text-sm ${themeClasses.textSecondary}`}>
                             Video coming soon
                           </p>
                         </div>
@@ -313,40 +458,22 @@ export default function Home() {
                     )}
                   </div>
 
-                  {/* Testimonial Content */}
-                  <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-6 z-20 pointer-events-none">
-                    {/* Quote */}
-                    <div className="mb-3 sm:mb-4">
-                      <svg className="w-6 h-6 text-purple-400 mb-2" fill="currentColor" viewBox="0 0 24 24">
+                  {/* Testimonial Quote Only - Positioned at bottom */}
+                  <div className="absolute bottom-0 left-0 right-0 p-3 sm:p-4 z-20 pointer-events-none">
+                    <div className="mb-2 sm:mb-3">
+                      <svg className="w-4 h-4 sm:w-5 sm:h-5 text-purple-400 mb-1" fill="currentColor" viewBox="0 0 24 24">
                         <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.996 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.984zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z"/>
                       </svg>
-                      <p className={`text-sm sm:text-base ${themeClasses.textWhite} font-medium leading-relaxed`}>
+                      <p className={`text-xs sm:text-sm ${themeClasses.textWhite} font-medium leading-snug line-clamp-2 drop-shadow-lg`}>
                         "{testimonial.quote}"
                       </p>
-                    </div>
-
-                    {/* Author Info */}
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-full bg-gradient-to-r from-purple-500 to-blue-500 flex items-center justify-center flex-shrink-0">
-                        <span className={`text-sm font-bold ${themeClasses.textWhite}`}>
-                          {testimonial.name.charAt(0)}
-                        </span>
-                      </div>
-                      <div>
-                        <p className={`text-sm sm:text-base font-semibold ${themeClasses.textWhite}`}>
-                          {testimonial.name}
-                        </p>
-                        <p className={`text-xs sm:text-sm ${themeClasses.textWhite}/70`}>
-                          {testimonial.role}
-                        </p>
-                      </div>
                     </div>
                   </div>
 
                   {/* Hover Glow Effect */}
-                  <div className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
+                  <div className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
                     style={{
-                      boxShadow: '0 0 40px rgba(168, 85, 247, 0.3), inset 0 0 40px rgba(168, 85, 247, 0.1)'
+                      boxShadow: '0 0 30px rgba(168, 85, 247, 0.25), inset 0 0 30px rgba(168, 85, 247, 0.08)'
                     }}
                   ></div>
                 </div>
@@ -357,20 +484,20 @@ export default function Home() {
       </section>
 
       {/* Key Features Section */}
-      <section ref={sectionRef} className={`py-12 sm:py-16 md:py-20 relative overflow-hidden ${themeClasses.bgPrimary}`}>
+      <section ref={sectionRef} className={`py-8 sm:py-12 md:py-16 lg:py-20 relative overflow-hidden ${themeClasses.bgPrimary}`}>
         <div className={`absolute inset-0 ${themeClasses.bgGradient} pointer-events-none`}></div>
 
         <div className="container mx-auto px-4 sm:px-6 relative z-10">
-          <div className="text-center max-w-3xl mx-auto mb-8 sm:mb-12 md:mb-16">
-            <h2 className={`text-3xl sm:text-4xl md:text-5xl font-bold ${themeClasses.textPrimary} mb-3 sm:mb-4`}>
+          <div className="text-center max-w-3xl mx-auto mb-6 sm:mb-8 md:mb-12 lg:mb-16">
+            <h2 className={`text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold ${themeClasses.textPrimary} mb-2 sm:mb-3 lg:mb-4`}>
               Why Choose ArvEdit?
             </h2>
-            <p className={`text-base sm:text-lg md:text-xl ${themeClasses.textSecondary}`}>
+            <p className={`text-sm sm:text-base md:text-lg lg:text-xl ${themeClasses.textSecondary}`}>
               We don't just edit videos- We Build Creators.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-12 sm:mb-16">
+          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4 lg:gap-6 mb-8 sm:mb-12 md:mb-16">
             {features.map((feature, index) => {
               const isVisible = visibleCards.has(index);
               const slideDirection = feature.row === 'top' ? '-translate-y-20' : 'translate-y-20';
@@ -382,7 +509,7 @@ export default function Home() {
                 <div
                   key={index}
                   onClick={() => hasVideo && setSelectedVideo(index)}
-                  className={`relative group ${themeClasses.cardBg} backdrop-blur-sm border ${themeClasses.cardBorder} p-6 rounded-xl transition-all duration-700 ease-out hover:scale-105 ${themeClasses.shadowHover} overflow-hidden ${isVisible
+                  className={`relative group ${themeClasses.cardBg} backdrop-blur-sm border ${themeClasses.cardBorder} p-3 sm:p-4 lg:p-6 rounded-lg sm:rounded-xl transition-all duration-700 ease-out active:scale-95 sm:hover:scale-105 ${themeClasses.shadowHover} overflow-hidden ${isVisible
                       ? 'opacity-100 translate-y-0 scale-100'
                       : `opacity-0 ${slideDirection} scale-95`
                     } ${hasVideo ? 'cursor-pointer' : ''}`}
@@ -394,22 +521,24 @@ export default function Home() {
                   <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 via-blue-500/5 to-pink-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
 
                   {/* Animated border glow */}
-                  <div className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-gradient-to-r from-purple-500/20 via-blue-500/20 to-pink-500/20 blur-xl -z-10"></div>
+                  <div className="absolute inset-0 rounded-lg sm:rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-gradient-to-r from-purple-500/20 via-blue-500/20 to-pink-500/20 blur-xl -z-10"></div>
 
                   {/* Icon with rotation animation */}
-                  <div className={`relative w-12 h-12 ${themeClasses.gradient} rounded-lg flex items-center justify-center mb-4 transform group-hover:rotate-6 group-hover:scale-110 transition-all duration-300`}>
+                  <div className={`relative w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 ${themeClasses.gradient} rounded-lg flex items-center justify-center mb-2 sm:mb-3 lg:mb-4 transform group-hover:rotate-6 group-hover:scale-110 transition-all duration-300`}>
+                    <div className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6 [&>svg]:w-full [&>svg]:h-full">
                     {feature.icon}
+                    </div>
                     {/* Pulsing ring */}
                     <div className="absolute inset-0 rounded-lg bg-gradient-to-r from-purple-500 to-blue-500 opacity-0 group-hover:opacity-30 animate-ping"></div>
                   </div>
 
                   {/* Title with gradient on hover */}
-                  <h3 className={`text-lg font-bold ${themeClasses.textPrimary} mb-2 group-hover:bg-gradient-to-r group-hover:from-purple-400 group-hover:to-blue-400 group-hover:bg-clip-text group-hover:text-transparent transition-all duration-300`}>
+                  <h3 className={`text-xs sm:text-sm lg:text-lg font-bold ${themeClasses.textPrimary} mb-1 sm:mb-2 group-hover:bg-gradient-to-r group-hover:from-purple-400 group-hover:to-blue-400 group-hover:bg-clip-text group-hover:text-transparent transition-all duration-300 leading-tight`}>
                     {feature.title}
                   </h3>
 
                   {/* Description */}
-                  <p className={`text-sm ${themeClasses.textSecondary} leading-relaxed`}>
+                  <p className={`text-[10px] sm:text-xs lg:text-sm ${themeClasses.textSecondary} leading-snug sm:leading-relaxed`}>
                     {feature.description}
                   </p>
 
@@ -421,9 +550,9 @@ export default function Home() {
 
                   {/* Play button overlay - only show if video exists */}
                   {hasVideo && (
-                    <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-xl">
-                      <div className="w-16 h-16 bg-gradient-to-r from-purple-600 to-blue-600 rounded-full flex items-center justify-center shadow-2xl transform group-hover:scale-110 transition-transform duration-300">
-                        <svg className="w-8 h-8 text-white ml-1" fill="currentColor" viewBox="0 0 20 20">
+                    <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-lg sm:rounded-xl">
+                      <div className="w-10 h-10 sm:w-12 sm:h-12 lg:w-16 lg:h-16 bg-gradient-to-r from-purple-600 to-blue-600 rounded-full flex items-center justify-center shadow-2xl transform group-hover:scale-110 transition-transform duration-300">
+                        <svg className="w-5 h-5 sm:w-6 sm:h-6 lg:w-8 lg:h-8 text-white ml-0.5 sm:ml-1" fill="currentColor" viewBox="0 0 20 20">
                           <path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z" />
                         </svg>
                       </div>
@@ -434,20 +563,20 @@ export default function Home() {
             })}
           </div>
 
-          {/* Video Modal */}
+          {/* Video Modal - Full screen on mobile */}
           {selectedVideo !== null && features[selectedVideo]?.videoUrl && (
             <div 
-              className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-fade-in"
+              className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 sm:bg-black/80 backdrop-blur-sm p-2 sm:p-4 animate-fade-in"
               onClick={() => setSelectedVideo(null)}
             >
               <div 
-                className={`relative w-full max-w-4xl ${themeClasses.cardBg} rounded-2xl ${themeClasses.shadow} overflow-hidden animate-slide-in`}
+                className={`relative w-full max-w-4xl ${themeClasses.cardBg} rounded-xl sm:rounded-2xl ${themeClasses.shadow} overflow-hidden animate-slide-in max-h-[95vh] sm:max-h-[90vh] overflow-y-auto`}
                 onClick={(e) => e.stopPropagation()}
               >
-                {/* Close button */}
+                {/* Close button - larger on mobile */}
                 <button
                   onClick={() => setSelectedVideo(null)}
-                  className={`absolute top-4 right-4 z-10 w-10 h-10 ${themeClasses.cardBg} rounded-full flex items-center justify-center ${themeClasses.shadow} hover:scale-110 transition-transform duration-200 ${themeClasses.textPrimary}`}
+                  className={`absolute top-2 right-2 sm:top-4 sm:right-4 z-10 w-11 h-11 min-w-[44px] min-h-[44px] ${themeClasses.cardBg} rounded-full flex items-center justify-center ${themeClasses.shadow} active:scale-95 sm:hover:scale-110 transition-transform duration-200 ${themeClasses.textPrimary}`}
                   aria-label="Close video"
                 >
                   <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -456,8 +585,8 @@ export default function Home() {
                 </button>
 
                 {/* Video Title */}
-                <div className={`p-4 sm:p-6 border-b ${themeClasses.border}`}>
-                  <h3 className={`text-xl sm:text-2xl font-bold ${themeClasses.textPrimary}`}>
+                <div className={`p-3 sm:p-4 md:p-6 border-b ${themeClasses.border} pr-14 sm:pr-16`}>
+                  <h3 className={`text-lg sm:text-xl md:text-2xl font-bold ${themeClasses.textPrimary}`}>
                     {features[selectedVideo].title}
                   </h3>
                 </div>
@@ -474,7 +603,7 @@ export default function Home() {
                     />
                   ) : (
                     <div className={`absolute inset-0 flex items-center justify-center ${themeClasses.bgTertiary}`}>
-                      <p className={`${themeClasses.textSecondary} text-center px-4`}>
+                      <p className={`${themeClasses.textSecondary} text-center px-4 text-sm sm:text-base`}>
                         Invalid video URL. Please check your Google Drive link.
                       </p>
                     </div>
@@ -492,22 +621,22 @@ export default function Home() {
             <p className={`text-base sm:text-lg md:text-xl ${themeClasses.textSecondary} mb-6 sm:mb-8 max-w-2xl mx-auto px-4`}>
               Join hundreds of creators who are crushing it with our editing services
             </p>
-            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center">
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center px-4 sm:px-0">
               <Link
                 href="/services"
-                className={`px-6 py-3 rounded-full font-semibold inline-block text-center transition-all duration-300 hover:scale-105 ${themeClasses.buttonPrimary}`}
+                className={`w-full sm:w-auto px-6 py-3.5 sm:py-3 min-h-[48px] rounded-full font-semibold inline-flex items-center justify-center text-center transition-all duration-300 active:scale-95 sm:hover:scale-105 ${themeClasses.buttonPrimary}`}
               >
                 View Our Services
               </Link>
               <Link
                 href="/portfolio"
-                className={`px-6 py-3 rounded-full font-semibold inline-block text-center transition-all duration-300 hover:scale-105 ${themeClasses.buttonOutline}`}
+                className={`w-full sm:w-auto px-6 py-3.5 sm:py-3 min-h-[48px] rounded-full font-semibold inline-flex items-center justify-center text-center transition-all duration-300 active:scale-95 sm:hover:scale-105 ${themeClasses.buttonOutline}`}
               >
                 See Our Work
               </Link>
               <Link
                 href="/contact"
-                className={`px-6 py-3 rounded-full font-semibold bg-gradient-to-r from-green-600 to-emerald-600 ${themeClasses.textWhite} hover:scale-105 transition-all duration-300 inline-block text-center`}
+                className={`w-full sm:w-auto px-6 py-3.5 sm:py-3 min-h-[48px] rounded-full font-semibold bg-gradient-to-r from-green-600 to-emerald-600 ${themeClasses.textWhite} active:scale-95 sm:hover:scale-105 transition-all duration-300 inline-flex items-center justify-center text-center`}
               >
                 Start Your Project →
               </Link>
