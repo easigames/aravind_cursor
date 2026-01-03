@@ -132,8 +132,20 @@ export default function VideoPlayer({
   }, [onPlay]);
 
   const handlePause = useCallback(() => {
+    // Show poster when video is paused and at the beginning
+    if (videoRef.current && poster) {
+      const currentTime = videoRef.current.currentTime;
+      const duration = videoRef.current.duration;
+      // If video is at the beginning (within 0.5 seconds) or very close to the end, show poster
+      if (currentTime < 0.5 || (duration > 0 && currentTime >= duration - 0.5)) {
+        setShowPoster(true);
+        if (currentTime < 0.5) {
+          videoRef.current.currentTime = 0;
+        }
+      }
+    }
     onPause?.();
-  }, [onPause]);
+  }, [onPause, poster]);
 
   const handleError = useCallback(() => {
     setHasError(true);
@@ -154,6 +166,31 @@ export default function VideoPlayer({
       }
     }
   }, []);
+
+  // Handle visibility change - show poster when tab becomes visible again
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (!document.hidden && videoRef.current && poster) {
+        // Tab became visible - if video is paused, show poster
+        if (videoRef.current.paused) {
+          const currentTime = videoRef.current.currentTime;
+          const duration = videoRef.current.duration;
+          // If at beginning or end, show poster
+          if (currentTime < 0.5 || (duration > 0 && currentTime >= duration - 0.5)) {
+            setShowPoster(true);
+            if (currentTime < 0.5) {
+              videoRef.current.currentTime = 0;
+            }
+          }
+        }
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, [poster]);
 
   // Get aspect ratio class
   const getAspectRatioClass = () => {
@@ -178,7 +215,7 @@ export default function VideoPlayer({
       {/* Poster Image - Shows immediately while video loads */}
       {poster && showPoster && !hasError && (
         <div 
-          className={`absolute inset-0 bg-cover bg-center transition-opacity duration-300 z-10 pointer-events-none ${isLoading || isBuffering || !hasLoadedFirstFrame ? 'opacity-100' : 'opacity-0'}`}
+          className={`absolute inset-0 bg-cover bg-center transition-opacity duration-300 z-10 pointer-events-none opacity-100`}
           style={{ backgroundImage: `url(${poster})` }}
         />
       )}

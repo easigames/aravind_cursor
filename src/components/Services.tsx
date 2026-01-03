@@ -104,20 +104,20 @@ export default function Services() {
             <Link
               key={index}
               href="/contact"
-              onMouseEnter={() => setHoveredIndex(index)}
-              onMouseLeave={() => setHoveredIndex(null)}
+                onMouseEnter={() => setHoveredIndex(index)}
+                onMouseLeave={() => setHoveredIndex(null)}
               onTouchStart={() => setHoveredIndex(index)}
               onTouchEnd={() => setTimeout(() => setHoveredIndex(null), 300)}
               className={`group relative ${themeClasses.cardBg} ${themeClasses.cardBorder} border backdrop-blur-sm p-5 sm:p-6 md:p-8 rounded-xl sm:rounded-2xl transition-all duration-500 ease-out cursor-pointer block
                 ${isHovered ? `sm:scale-105 ${themeClasses.cardHoverBg} shadow-2xl z-20 rotate-0` : ''}
                 ${isNeighbor ? `sm:scale-95 ${tiltClass}` : ''}
                 ${isDimmed ? 'sm:scale-90 opacity-40 sm:blur-[1px]' : 'opacity-100'}
-              `}
-              style={{
-                transformOrigin: 'center',
-                filter: isDimmed ? 'saturate(0.3)' : 'saturate(1)',
-              }}
-            >
+                `}
+                style={{
+                  transformOrigin: 'center',
+                  filter: isDimmed ? 'saturate(0.3)' : 'saturate(1)',
+                }}
+              >
                 {/* Glow effect on hover */}
                 {isHovered && (
                   <div className="absolute inset-0 bg-gradient-to-br from-purple-500/20 to-blue-500/20 rounded-2xl blur-xl -z-10 animate-pulse"></div>

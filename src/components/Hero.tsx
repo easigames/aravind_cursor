@@ -307,6 +307,7 @@ export default function Hero() {
                 <div className="relative w-full h-full">
                   <VideoPlayer
                     src="/api/video/arvedit_homepage.mp4"
+                    poster="/images/arvind_demo.jpeg"
                     title="ArvEdit Demo"
                     aspectRatio="video"
                     muted={false}
