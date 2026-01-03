@@ -170,68 +170,104 @@ export default function Header() {
           </div>
         </div>
 
-        {/* Mobile Menu - Creative Design with Slide Animation */}
-        <div
-          className={`lg:hidden overflow-hidden transition-all duration-500 ease-in-out ${isMenuOpen ? 'max-h-[500px] opacity-100 mt-4' : 'max-h-0 opacity-0'
-            }`}
-        >
-          <div className={`pb-4 space-y-2 rounded-2xl ${themeClasses.glassEffectDark} ${themeClasses.shadow} p-3`}>
-            {navItems.map((item, index) => {
-              const isActive = isActiveTab(item.href);
-              return (
-                <Link
-                  key={item.id}
-                  href={item.href}
-                  className={`relative flex items-center px-4 py-4 min-h-[48px] rounded-xl transition-all duration-300 ease-out overflow-hidden active:scale-95 ${isActive
-                      ? `${themeClasses.textWhite} shadow-lg`
-                      : `${themeClasses.headerTextSecondary} hover:${themeClasses.textPrimary}`
-                    }`}
-                  onClick={() => setIsMenuOpen(false)}
-                  style={{
-                    transitionDelay: isMenuOpen ? `${index * 50}ms` : '0ms'
-                  }}
-                >
-                  {isActive && (
-                    <div className={`absolute inset-0 ${themeClasses.gradient} rounded-xl`}></div>
-                  )}
-
-                  {/* Icon indicator for active item */}
-                  {isActive && (
-                    <div className="absolute left-2 w-1 h-6 bg-white/50 rounded-full"></div>
-                  )}
-
-                  <span className="text-sm font-semibold relative z-10 flex-1">{item.name}</span>
-
-                  {/* Arrow for navigation */}
-                  <svg
-                    className={`w-4 h-4 relative z-10 transition-transform ${isActive ? 'text-white' : 'text-gray-400'}`}
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                  </svg>
-                </Link>
-              );
-            })}
-
-            {/* Divider */}
-            <div className={`h-px ${themeClasses.border} my-2`}></div>
-
-            {/* CTA Button */}
-            <Link
-              href="/contact"
-              className={`flex items-center justify-center space-x-2 px-4 py-4 min-h-[48px] rounded-xl ${themeClasses.gradient} ${themeClasses.textWhite} ${themeClasses.shadow} hover:shadow-xl transition-all duration-300 active:scale-95 font-semibold`}
-              onClick={() => setIsMenuOpen(false)}
-            >
-              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" clipRule="evenodd" />
-              </svg>
-              <span className="text-sm">Start Your Project</span>
-            </Link>
-          </div>
-        </div>
       </nav>
+
+      {/* Mobile Menu Overlay */}
+      <div
+        className={`lg:hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-40 transition-opacity duration-300 ${
+          isMenuOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+        }`}
+        onClick={() => setIsMenuOpen(false)}
+      />
+
+      {/* Mobile Menu - Slide from Right */}
+      <div
+        className={`lg:hidden fixed top-0 right-0 h-full w-[280px] sm:w-[320px] z-50 transition-transform duration-300 ease-out ${
+          isMenuOpen ? 'translate-x-0' : 'translate-x-full'
+        } ${themeClasses.cardBg} shadow-2xl`}
+      >
+        {/* Close Button */}
+        <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
+          <div className="flex items-center space-x-2">
+            <div className="w-8 h-8 bg-gradient-to-br from-purple-600 via-purple-500 to-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-purple-500/30">
+              <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M2 6a2 2 0 012-2h6a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6zM14.553 7.106A1 1 0 0014 8v4a1 1 0 00.553.894l2 1A1 1 0 0018 13V7a1 1 0 00-1.447-.894l-2 1z" />
+              </svg>
+            </div>
+            <span className="text-base font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
+              ArvEdit
+            </span>
+          </div>
+          <button
+            onClick={() => setIsMenuOpen(false)}
+            className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-300 hover:bg-gray-100 dark:hover:bg-gray-800 active:scale-95`}
+            aria-label="Close menu"
+          >
+            <svg className="w-5 h-5 text-gray-600 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+
+        {/* Navigation Items */}
+        <div className="p-4 space-y-2 overflow-y-auto h-[calc(100%-180px)]">
+          {navItems.map((item, index) => {
+            const isActive = isActiveTab(item.href);
+            return (
+              <Link
+                key={item.id}
+                href={item.href}
+                className={`relative flex items-center px-4 py-4 min-h-[48px] rounded-xl transition-all duration-300 ease-out overflow-hidden active:scale-95 ${
+                  isActive
+                    ? `${themeClasses.textWhite} shadow-lg`
+                    : `${themeClasses.headerTextSecondary} hover:bg-gray-100 dark:hover:bg-gray-800`
+                }`}
+                onClick={() => setIsMenuOpen(false)}
+                style={{
+                  transform: isMenuOpen ? 'translateX(0)' : 'translateX(20px)',
+                  opacity: isMenuOpen ? 1 : 0,
+                  transitionDelay: isMenuOpen ? `${index * 50 + 100}ms` : '0ms'
+                }}
+              >
+                {isActive && (
+                  <div className={`absolute inset-0 ${themeClasses.gradient} rounded-xl`}></div>
+                )}
+
+                {/* Icon indicator for active item */}
+                {isActive && (
+                  <div className="absolute left-2 w-1 h-6 bg-white/50 rounded-full"></div>
+                )}
+
+                <span className="text-sm font-semibold relative z-10 flex-1">{item.name}</span>
+
+                {/* Arrow for navigation */}
+                <svg
+                  className={`w-4 h-4 relative z-10 transition-transform ${isActive ? 'text-white' : 'text-gray-400'}`}
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+              </Link>
+            );
+          })}
+        </div>
+
+        {/* CTA Button at Bottom */}
+        <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-200 dark:border-gray-700">
+          <Link
+            href="/contact"
+            className={`flex items-center justify-center space-x-2 px-4 py-4 min-h-[48px] rounded-xl ${themeClasses.gradient} ${themeClasses.textWhite} ${themeClasses.shadow} hover:shadow-xl transition-all duration-300 active:scale-95 font-semibold w-full`}
+            onClick={() => setIsMenuOpen(false)}
+          >
+            <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" clipRule="evenodd" />
+            </svg>
+            <span className="text-sm">Start Your Project</span>
+          </Link>
+        </div>
+      </div>
     </header>
   );
 }

@@ -539,17 +539,6 @@ export default function Home() {
                     )}
                   </div>
 
-                  {/* Testimonial Quote Only - Positioned at bottom */}
-                  <div className="absolute bottom-0 left-0 right-0 p-3 sm:p-4 z-20 pointer-events-none">
-                    <div className="mb-2 sm:mb-3">
-                      <svg className="w-4 h-4 sm:w-5 sm:h-5 text-purple-400 mb-1" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.996 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.984zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z"/>
-                      </svg>
-                      <p className={`text-xs sm:text-sm ${themeClasses.textWhite} font-medium leading-snug line-clamp-2 drop-shadow-lg`}>
-                        "{testimonial.quote}"
-                      </p>
-                    </div>
-                  </div>
 
                   {/* Hover Glow Effect */}
                   <div className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"

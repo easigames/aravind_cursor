@@ -161,7 +161,7 @@ export default function Footer() {
         <div className={`border-t ${themeClasses.footerBorder} pt-6 sm:pt-8`}>
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <p className={`${themeClasses.textSecondary} text-xs sm:text-sm text-center md:text-left`}>
-              © 2025 ArvEdit. All rights reserved.
+              © 2026 ArvEdit. All rights reserved.
             </p>
             <div className="flex flex-wrap justify-center gap-4 sm:gap-6">
               <Link href="/privacy" className={`${themeClasses.footerLink} text-xs sm:text-sm transition-colors py-1`}>

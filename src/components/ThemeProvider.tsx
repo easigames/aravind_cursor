@@ -23,11 +23,9 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const savedTheme = localStorage.getItem('theme') as ThemeName | null;
-    const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches
-      ? 'dark'
-      : 'light';
     
-    const initialTheme = savedTheme || systemTheme;
+    // Default to dark mode if no saved theme
+    const initialTheme = savedTheme || 'dark';
     setTheme(initialTheme);
     applyTheme(initialTheme);
     setMounted(true);

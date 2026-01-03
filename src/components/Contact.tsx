@@ -73,9 +73,22 @@ export default function Contact() {
           <h2 className={`text-3xl sm:text-4xl md:text-5xl font-bold ${themeClasses.textPrimary} mb-3 sm:mb-4`}>
             Let's Create Something Amazing
           </h2>
-          <p className={`text-base sm:text-lg md:text-xl ${themeClasses.textSecondary} px-2`}>
+          <p className={`text-base sm:text-lg md:text-xl ${themeClasses.textSecondary} px-2 mb-6`}>
             Ready to bring your vision to life? Get in touch with us today
           </p>
+          
+          {/* Calendly Button */}
+          <a 
+            href="https://calendly.com/arvedit" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className={`inline-flex items-center gap-2 ${themeClasses.buttonPrimary} px-6 sm:px-8 py-3 sm:py-4 rounded-lg font-semibold text-base sm:text-lg shadow-lg hover:shadow-xl transition-all duration-300 active:scale-95 sm:hover:scale-105`}
+          >
+            <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+            Book call using my Calendar
+          </a>
         </div>
 
         <div className="grid lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-12 max-w-6xl mx-auto">
