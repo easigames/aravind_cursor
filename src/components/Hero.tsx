@@ -177,17 +177,18 @@ export default function Hero() {
               <div className="absolute -bottom-1 -right-1 w-2 h-2 bg-gradient-to-r from-blue-500 to-pink-500 rounded-full opacity-40"></div>
             </div>
 
-            {/* Main Heading */}
+            {/* Main Heading - SEO Optimized */}
             <h1 className={`text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-bold ${themeClasses.heroText} mb-3 sm:mb-4 leading-tight animate-fade-in-up`}>
+              <span className="sr-only">Professional Video Editing Services for TikTok, Instagram Reels, and YouTube Shorts - </span>
               Edits That Make People Watch. 🎬
               <span className={`block ${themeClasses.gradientText}`}>
                 Turn Views Into Followers. 👥
               </span>
             </h1>
 
-            {/* Subheading */}
+            {/* Subheading - SEO Enhanced */}
             <p className={`text-sm sm:text-base md:text-lg ${themeClasses.heroSubtext} mb-4 sm:mb-6 animate-fade-in-up animation-delay-200`}>
-              High-energy edits designed to hook viewers in 3 seconds. Algorithm-crushing short-form videos for TikTok, Reels & Shorts.
+              Professional video editing services with high-energy edits designed to hook viewers in 3 seconds. We create algorithm-crushing short-form videos for TikTok, Instagram Reels, and YouTube Shorts. Expert motion graphics, color grading, and post-production for content creators, influencers, and businesses worldwide.
             </p>
 
             {/* CTA Buttons */}

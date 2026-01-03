@@ -68,13 +68,16 @@ export default function Contact() {
       </div>
 
       <div className="container mx-auto px-4 sm:px-6 relative z-10">
-        {/* Section Header */}
+        {/* Section Header - SEO Optimized */}
         <div className="text-center max-w-3xl mx-auto mb-8 sm:mb-12 md:mb-16">
-          <h2 className={`text-3xl sm:text-4xl md:text-5xl font-bold ${themeClasses.textPrimary} mb-3 sm:mb-4`}>
+          <h1 className={`text-3xl sm:text-4xl md:text-5xl font-bold ${themeClasses.textPrimary} mb-3 sm:mb-4`}>
+            Contact Professional Video Editing Services
+          </h1>
+          <h2 className={`text-2xl sm:text-3xl font-semibold ${themeClasses.textPrimary} mb-3 sm:mb-4`}>
             Let's Create Something Amazing
           </h2>
           <p className={`text-base sm:text-lg md:text-xl ${themeClasses.textSecondary} px-2 mb-6`}>
-            Ready to bring your vision to life? Get in touch with us today
+            Ready to transform your content with professional video editing? Get in touch with our expert team today for TikTok, Instagram Reels, YouTube Shorts editing, motion graphics, color grading, and post-production services. Free consultation available.
           </p>
           
           {/* Calendly Button */}

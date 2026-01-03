@@ -3,14 +3,27 @@
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { useTheme } from '@/components/ThemeProvider';
+import StructuredData from '@/components/StructuredData';
 
 export default function AboutPage() {
   const { themeClasses } = useTheme();
 
   return (
-    <div className={`min-h-screen ${themeClasses.bgPrimary}`}>
-      <Header />
-      <div className="pt-16 sm:pt-20 animate-fade-in-up">
+    <>
+      <StructuredData 
+        type="breadcrumb" 
+        data={{
+          '@context': 'https://schema.org',
+          '@type': 'BreadcrumbList',
+          itemListElement: [
+            { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://arvedit.com' },
+            { '@type': 'ListItem', position: 2, name: 'About', item: 'https://arvedit.com/about' }
+          ]
+        }}
+      />
+      <div className={`min-h-screen ${themeClasses.bgPrimary}`}>
+        <Header />
+        <div className="pt-16 sm:pt-20 animate-fade-in-up">
         {/* About Us Section */}
         <section className={`py-12 sm:py-16 md:py-20 relative overflow-hidden ${themeClasses.bgPrimary}`}>
           <div className={`absolute inset-0 ${themeClasses.bgGradient} pointer-events-none`}></div>
@@ -194,6 +207,7 @@ export default function AboutPage() {
       </div>
       <Footer />
     </div>
+    </>
   );
 }
 
