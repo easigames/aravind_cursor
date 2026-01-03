@@ -64,13 +64,21 @@ export async function streamVideo(
   etag?: string;
 } | null> {
   if (!BUCKET_NAME) {
+    console.error('R2_BUCKET_NAME environment variable is not set');
     throw new Error('R2_BUCKET_NAME environment variable is not set');
   }
 
   try {
-    // First get the total size
-    const metadata = await getVideoMetadata(key);
+    // First get the total size with timeout
+    const metadata = await Promise.race([
+      getVideoMetadata(key),
+      new Promise<null>((_, reject) => 
+        setTimeout(() => reject(new Error('Metadata fetch timeout')), 10000)
+      )
+    ]);
+    
     if (!metadata) {
+      console.error(`Video metadata not found for key: ${key}`);
       return null;
     }
 
@@ -105,10 +113,21 @@ export async function streamVideo(
       Range: `bytes=${start}-${end}`,
     });
 
-    const response = await s3Client.send(command);
+    // Add timeout to the actual stream request
+    const response = await Promise.race([
+      s3Client.send(command),
+      new Promise<never>((_, reject) => 
+        setTimeout(() => reject(new Error('Stream fetch timeout')), 15000)
+      )
+    ]);
+
+    if (!response.Body) {
+      console.error(`No body in response for video key: ${key}`);
+      return null;
+    }
 
     return {
-      body: response.Body?.transformToWebStream() || null,
+      body: response.Body.transformToWebStream(),
       contentLength: chunkSize,
       contentType,
       contentRange,
@@ -116,7 +135,12 @@ export async function streamVideo(
       etag,
     };
   } catch (error) {
-    console.error('Error streaming video:', error);
+    console.error(`Error streaming video ${key}:`, error);
+    // Log more details about the error
+    if (error instanceof Error) {
+      console.error('Error name:', error.name);
+      console.error('Error message:', error.message);
+    }
     return null;
   }
 }

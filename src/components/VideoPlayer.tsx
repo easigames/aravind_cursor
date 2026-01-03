@@ -60,10 +60,19 @@ export default function VideoPlayer({
   const [showPoster, setShowPoster] = useState(true);
   const [bufferProgress, setBufferProgress] = useState(0);
   const [hasLoadedFirstFrame, setHasLoadedFirstFrame] = useState(false);
+  const [retryCount, setRetryCount] = useState(0);
+  const loadTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Start loading immediately - no lazy loading delay
   useEffect(() => {
     setIsVisible(true);
+    
+    // Cleanup timeout on unmount
+    return () => {
+      if (loadTimeoutRef.current) {
+        clearTimeout(loadTimeoutRef.current);
+      }
+    };
   }, []);
 
   // Expose video ref to parent component
@@ -105,11 +114,28 @@ export default function VideoPlayer({
     if (!poster) {
       setIsLoading(true);
     }
+    
+    // Set a timeout to detect if video is stuck loading (30 seconds)
+    if (loadTimeoutRef.current) {
+      clearTimeout(loadTimeoutRef.current);
+    }
+    loadTimeoutRef.current = setTimeout(() => {
+      if (videoRef.current && videoRef.current.readyState < 2) {
+        // Video hasn't loaded after 30 seconds - show error
+        console.warn('Video load timeout - attempting retry');
+        handleError();
+      }
+    }, 30000);
   }, [poster]);
 
   const handleCanPlay = useCallback(() => {
     setIsLoading(false);
     setIsBuffering(false);
+    // Clear loading timeout since video is ready
+    if (loadTimeoutRef.current) {
+      clearTimeout(loadTimeoutRef.current);
+      loadTimeoutRef.current = null;
+    }
   }, []);
 
   const handleWaiting = useCallback(() => {
@@ -148,10 +174,34 @@ export default function VideoPlayer({
   }, [onPause, poster]);
 
   const handleError = useCallback(() => {
-    setHasError(true);
-    setIsLoading(false);
-    onError?.();
-  }, [onError]);
+    // Clear loading timeout
+    if (loadTimeoutRef.current) {
+      clearTimeout(loadTimeoutRef.current);
+      loadTimeoutRef.current = null;
+    }
+    
+    // Try to retry automatically up to 2 times before showing error
+    if (retryCount < 2) {
+      console.log(`Video load failed, retrying... (attempt ${retryCount + 1}/2)`);
+      setRetryCount(prev => prev + 1);
+      setIsLoading(true);
+      setShowPoster(true); // Show poster while retrying
+      
+      // Wait a moment before retrying
+      setTimeout(() => {
+        if (videoRef.current) {
+          videoRef.current.load();
+        }
+      }, 1000);
+    } else {
+      // Show error after retries exhausted - keep poster visible as fallback
+      console.error('Video failed to load after retries');
+      setHasError(true);
+      setIsLoading(false);
+      setShowPoster(true); // Keep poster visible as fallback
+      onError?.();
+    }
+  }, [onError, retryCount]);
 
   // Track buffer progress
   const handleProgress = useCallback(() => {
@@ -212,45 +262,71 @@ export default function VideoPlayer({
       ref={containerRef}
       className={`relative overflow-hidden bg-black ${getAspectRatioClass()} ${className}`}
     >
-      {/* Poster Image - Shows immediately while video loads */}
-      {poster && showPoster && !hasError && (
+      {/* Poster/Thumbnail Image - Always show as fallback background, especially on error */}
+      {poster && (
         <div 
-          className={`absolute inset-0 bg-cover bg-center transition-opacity duration-300 z-10 pointer-events-none opacity-100`}
-          style={{ backgroundImage: `url(${poster})` }}
+          className={`absolute inset-0 bg-cover bg-center transition-opacity duration-300 z-0 ${
+            showPoster || hasError ? 'opacity-100' : 'opacity-0'
+          }`}
+          style={{ 
+            backgroundImage: `url(${poster})`,
+            backgroundPosition: 'center',
+            backgroundSize: 'cover',
+            backgroundRepeat: 'no-repeat'
+          }}
         />
       )}
 
-      {/* Minimal Loading Indicator - Only show if no poster */}
+      {/* Fallback: If no poster provided and there's an error, show a placeholder */}
+      {!poster && hasError && (
+        <div className="absolute inset-0 bg-gradient-to-br from-gray-800 to-gray-900 z-0" />
+      )}
+
+      {/* Minimal Loading Indicator - Only show if no poster and loading */}
       {isLoading && !poster && !hasError && (
-        <div className="absolute inset-0 bg-gray-900 flex items-center justify-center">
+        <div className="absolute inset-0 bg-gray-900 flex items-center justify-center z-10">
           <div className="w-8 h-8 border-2 border-white/20 border-t-white/60 rounded-full animate-spin" />
         </div>
       )}
 
+      {/* Loading spinner overlay when poster exists */}
+      {isLoading && poster && !hasError && (
+        <div className="absolute inset-0 bg-black/30 flex items-center justify-center z-10">
+          <div className="w-8 h-8 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+        </div>
+      )}
+
       {/* Subtle Buffering Indicator - Only show when actually buffering during playback */}
-      {isBuffering && !isLoading && (
-        <div className="absolute inset-0 bg-black/20 flex items-center justify-center z-10 pointer-events-none">
+      {isBuffering && !isLoading && !hasError && (
+        <div className="absolute inset-0 bg-black/20 flex items-center justify-center z-15 pointer-events-none">
           <div className="w-6 h-6 border-2 border-white/30 border-t-white/70 rounded-full animate-spin" />
         </div>
       )}
 
-      {/* Error State */}
+      {/* Error State - Subtle overlay on top of poster/thumbnail */}
       {hasError && (
-        <div className="absolute inset-0 flex flex-col items-center justify-center bg-gray-900/90 p-4">
-          <svg className="w-12 h-12 sm:w-16 sm:h-16 text-gray-500 mb-3 sm:mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
-          </svg>
-          <p className="text-gray-400 text-xs sm:text-sm text-center">Unable to load video</p>
-          <button 
-            onClick={() => {
-              setHasError(false);
-              setIsLoading(true);
-              videoRef.current?.load();
-            }}
-            className="mt-3 px-5 py-2.5 min-h-[44px] bg-purple-600 hover:bg-purple-700 active:scale-95 rounded-lg text-white text-sm transition-colors"
-          >
-            Retry
-          </button>
+        <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/70 backdrop-blur-sm p-4 z-20">
+          <div className="bg-gray-900/90 rounded-xl p-4 sm:p-6 flex flex-col items-center max-w-xs">
+            <svg className="w-10 h-10 sm:w-12 sm:h-12 text-gray-400 mb-2 sm:mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+            </svg>
+            <p className="text-gray-300 text-xs sm:text-sm text-center mb-3">Video temporarily unavailable</p>
+            <button 
+              onClick={() => {
+                setHasError(false);
+                setIsLoading(true);
+                setRetryCount(0); // Reset retry count for manual retry
+                setShowPoster(true); // Show poster while retrying
+                // Add a small delay before reloading
+                setTimeout(() => {
+                  videoRef.current?.load();
+                }, 100);
+              }}
+              className="px-4 py-2 min-h-[44px] bg-purple-600 hover:bg-purple-700 active:scale-95 rounded-lg text-white text-sm font-medium transition-all shadow-lg"
+            >
+              Try Again
+            </button>
+          </div>
         </div>
       )}
 
@@ -258,7 +334,9 @@ export default function VideoPlayer({
       {isVisible && !hasError && (
         <video
           ref={videoRef}
-          className={`w-full h-full relative z-0 ${objectFit === 'cover' ? 'object-cover' : 'object-contain'}`}
+          className={`w-full h-full relative z-10 ${objectFit === 'cover' ? 'object-cover' : 'object-contain'} ${
+            showPoster ? 'opacity-0' : 'opacity-100'
+          } transition-opacity duration-300`}
           src={src}
           poster={poster}
           autoPlay={autoPlay}
@@ -269,6 +347,8 @@ export default function VideoPlayer({
           playsInline
           crossOrigin="anonymous"
           title={title}
+          // Add key to force remount on retry
+          key={`video-${retryCount}`}
           onLoadStart={handleLoadStart}
           onLoadedMetadata={handleLoadedMetadata}
           onLoadedData={() => {
@@ -285,6 +365,14 @@ export default function VideoPlayer({
           onPause={handlePause}
           onProgress={handleProgress}
           onError={handleError}
+          onStalled={() => {
+            console.warn('Video stalled - network may be slow');
+            // Don't treat stall as error, just log it
+          }}
+          onSuspend={() => {
+            // Video data loading has been suspended (normal for streaming)
+            console.log('Video loading suspended (normal)');
+          }}
         >
           Your browser does not support the video tag.
         </video>

@@ -56,7 +56,18 @@ export async function GET(
     const rangeHeader = request.headers.get('range');
     
     // Stream the video with Range support (pass null if no range header for full stream)
-    const streamResult = await streamVideo(decodedKey, rangeHeader);
+    // Add timeout protection
+    const timeoutPromise = new Promise((_, reject) => 
+      setTimeout(() => reject(new Error('Request timeout')), 25000)
+    );
+    
+    const streamResult = await Promise.race([
+      streamVideo(decodedKey, rangeHeader),
+      timeoutPromise
+    ]).catch((error) => {
+      console.error('Video streaming error:', error);
+      return null;
+    });
     
     if (!streamResult || !streamResult.body) {
       return NextResponse.json(

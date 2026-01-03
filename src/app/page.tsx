@@ -486,6 +486,9 @@ export default function Home() {
                             className="w-full h-full"
                             onPlay={handleVideoPlay}
                             onPause={handleVideoPause}
+                            onError={() => {
+                              console.error(`Failed to load testimonial video for ${testimonial.name}`);
+                            }}
                             setVideoRef={setVideoRef}
                           />
                         </div>
