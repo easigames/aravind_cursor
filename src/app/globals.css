@@ -324,3 +324,13 @@ input, textarea, select {
   opacity: 0.7;
   font-size: 11px;
 }
+
+/* Hide scrollbar utility - Netflix-style sliders */
+.scrollbar-hide {
+  -ms-overflow-style: none;  /* Internet Explorer 10+ */
+  scrollbar-width: none;  /* Firefox */
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;  /* Safari and Chrome */
+}

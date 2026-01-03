@@ -161,7 +161,7 @@ export default function AboutPage() {
                       <svg className="w-5 h-5 sm:w-6 sm:h-6 text-purple-500 flex-shrink-0 mt-1" fill="currentColor" viewBox="0 0 20 20">
                         <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                       </svg>
-                      <span className={`${themeClasses.textSecondary} text-sm sm:text-base`}>Unlimited revisions</span>
+                      <span className={`${themeClasses.textSecondary} text-sm sm:text-base`}>Revisions Included</span>
                     </li>
                   </ul>
                 </div>
@@ -170,15 +170,15 @@ export default function AboutPage() {
               {/* Stats - Show at Bottom */}
               <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
                 <div className={`text-center p-4 sm:p-6 ${themeClasses.cardBg} ${themeClasses.cardBorder} border rounded-xl`}>
-                  <div className={`text-2xl sm:text-3xl md:text-4xl font-bold ${themeClasses.gradientText} mb-1 sm:mb-2`}>500+</div>
+                  <div className={`text-2xl sm:text-3xl md:text-4xl font-bold ${themeClasses.gradientText} mb-1 sm:mb-2`}>50+</div>
                   <div className={`${themeClasses.textSecondary} text-xs sm:text-sm`}>Videos Edited</div>
                 </div>
                 <div className={`text-center p-4 sm:p-6 ${themeClasses.cardBg} ${themeClasses.cardBorder} border rounded-xl`}>
-                  <div className={`text-2xl sm:text-3xl md:text-4xl font-bold ${themeClasses.gradientText} mb-1 sm:mb-2`}>100+</div>
+                  <div className={`text-2xl sm:text-3xl md:text-4xl font-bold ${themeClasses.gradientText} mb-1 sm:mb-2`}>30+</div>
                   <div className={`${themeClasses.textSecondary} text-xs sm:text-sm`}>Happy Clients</div>
                 </div>
                 <div className={`text-center p-4 sm:p-6 ${themeClasses.cardBg} ${themeClasses.cardBorder} border rounded-xl`}>
-                  <div className={`text-2xl sm:text-3xl md:text-4xl font-bold ${themeClasses.gradientText} mb-1 sm:mb-2`}>50M+</div>
+                  <div className={`text-2xl sm:text-3xl md:text-4xl font-bold ${themeClasses.gradientText} mb-1 sm:mb-2`}>1.5M+</div>
                   <div className={`${themeClasses.textSecondary} text-xs sm:text-sm`}>Total Views</div>
                 </div>
                 <div className={`text-center p-4 sm:p-6 ${themeClasses.cardBg} ${themeClasses.cardBorder} border rounded-xl`}>

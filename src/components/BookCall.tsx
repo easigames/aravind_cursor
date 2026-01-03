@@ -156,13 +156,13 @@ export default function BookCall() {
             <div className={`${themeClasses.cardBg} ${themeClasses.cardBorder} border backdrop-blur-sm p-4 sm:p-6 rounded-xl`}>
               <p className={`${themeClasses.textSecondary} mb-3 sm:mb-4 text-sm sm:text-base`}>Prefer to reach out directly?</p>
               <div className="space-y-3">
-                <a href="mailto:arvind.sri2025@gmail.com" className={`flex items-center ${themeClasses.textPrimary} hover:text-purple-400 transition-colors min-h-[44px] text-sm sm:text-base`}>
+                <a href="mailto:thearvedit@gmail.com" className={`flex items-center ${themeClasses.textPrimary} hover:text-purple-400 transition-colors min-h-[44px] text-sm sm:text-base`}>
                   <div className="w-8 h-8 sm:w-9 sm:h-9 min-w-[32px] theme-gradient rounded-lg flex items-center justify-center mr-3">
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                     </svg>
                   </div>
-                  <span className="break-all">arvind.sri2025@gmail.com</span>
+                  <span className="break-all">thearvedit@gmail.com</span>
                 </a>
               </div>
             </div>

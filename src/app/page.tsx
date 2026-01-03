@@ -241,6 +241,7 @@ export default function Home() {
       name: 'Courtney Lombardo',
       role: 'Content Creator',
       videoUrl: 'r2:courtney_testimonial.mp4', // Replace with your R2 video key or other video URL
+      thumbnail: '/images/courtney.jpeg',
       quote: "I am always so satisfied with his work.",
     },
     {
@@ -248,23 +249,70 @@ export default function Home() {
       name: 'James Meadows',
       role: 'Influencer',
       videoUrl: 'r2:james_testimonial.mp4', // Replace with your R2 video key or other video URL
+      thumbnail: '/images/james.jpeg',
       quote: 'The services have always been AWESOME!',
     },
     {
       id: 3,
       name: 'Janice Silver',
       role: 'Brand Ambassador',
-      videoUrl: 'r2:janice_testimonial.mp4', // Replace with your R2 video key or other video URL
+      videoUrl: 'r2:janice_testimonia.mp4', // Replace with your R2 video key or other video URL
+      thumbnail: '/images/janice.jpeg',
       quote: 'He\'s done an amazing job and is really really fast!',
     },
     {
       id: 4,
+      name: 'Mae',
+      role: 'Content Creator',
+      videoUrl: 'r2:mae_video.mp4', // Replace with your R2 video key
+      thumbnail: '/images/mae.jpeg',
+      quote: 'Amazing work, highly recommend!',
+    },
+    {
+      id: 5,
       name: 'Kara',
       role: 'YouTuber',
       videoUrl: 'r2:Kara_testimonial.mp4', // Replace with your R2 video key or other video URL
+      thumbnail: '/images/kara.jpeg',
       quote: 'His video creation and programming skills are FANTASTIC!',
     },
   ];
+
+  // Netflix slider state
+  const sliderRef = useRef<HTMLDivElement>(null);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(true);
+
+  // Check scroll position
+  const checkScrollPosition = useCallback(() => {
+    const slider = sliderRef.current;
+    if (slider) {
+      setCanScrollLeft(slider.scrollLeft > 0);
+      setCanScrollRight(slider.scrollLeft < slider.scrollWidth - slider.clientWidth - 10);
+    }
+  }, []);
+
+  // Scroll slider
+  const scrollSlider = (direction: 'left' | 'right') => {
+    const slider = sliderRef.current;
+    if (slider) {
+      const scrollAmount = slider.clientWidth * 0.8;
+      slider.scrollBy({
+        left: direction === 'left' ? -scrollAmount : scrollAmount,
+        behavior: 'smooth'
+      });
+    }
+  };
+
+  // Monitor scroll position
+  useEffect(() => {
+    const slider = sliderRef.current;
+    if (slider) {
+      slider.addEventListener('scroll', checkScrollPosition);
+      checkScrollPosition();
+      return () => slider.removeEventListener('scroll', checkScrollPosition);
+    }
+  }, [checkScrollPosition]);
 
   // Helper to get video stream URL (similar to Portfolio)
   const getVideoStreamUrl = (videoUrl: string | undefined): string | null => {
@@ -316,23 +364,55 @@ export default function Home() {
       <Header />
       <Hero />
 
-      {/* Testimonials Section */}
+      {/* Testimonials Section - Netflix Style */}
       <section className={`py-12 sm:py-16 md:py-20 relative overflow-hidden ${themeClasses.bgPrimary}`}>
         <div className={`absolute inset-0 ${themeClasses.bgGradient} pointer-events-none opacity-30`}></div>
         
-        <div className="container mx-auto px-4 sm:px-6 relative z-10">
+        <div className="relative z-10">
           {/* Section Header */}
-          <div className="text-center max-w-3xl mx-auto mb-8 sm:mb-12 md:mb-16">
-            <h2 className={`text-3xl sm:text-4xl md:text-5xl font-bold ${themeClasses.textPrimary} mb-3 sm:mb-4`}>
-              What Our Clients Say
-            </h2>
-            <p className={`text-base sm:text-lg md:text-xl ${themeClasses.textSecondary}`}>
-              Real testimonials from creators who transformed their content with ArvEdit
-            </p>
+          <div className="container mx-auto px-4 sm:px-6">
+            <div className="text-center max-w-3xl mx-auto mb-8 sm:mb-12">
+              <h2 className={`text-3xl sm:text-4xl md:text-5xl font-bold ${themeClasses.textPrimary} mb-3 sm:mb-4`}>
+                What Our Clients Say
+              </h2>
+              <p className={`text-base sm:text-lg md:text-xl ${themeClasses.textSecondary}`}>
+                Real testimonials from creators who transformed their content with ArvEdit
+              </p>
+            </div>
           </div>
 
-          {/* Testimonial Videos Grid - 4 in a row */}
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6 max-w-7xl mx-auto">
+          {/* Netflix-Style Slider Container */}
+          <div className="relative group/slider">
+            {/* Left Navigation Arrow */}
+            <button
+              onClick={() => scrollSlider('left')}
+              className={`absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 z-40 w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 bg-black/80 hover:bg-black rounded-full flex items-center justify-center transition-all duration-300 shadow-2xl border border-white/10
+                ${canScrollLeft ? 'opacity-0 group-hover/slider:opacity-100' : 'opacity-0 pointer-events-none'}`}
+              aria-label="Scroll left"
+            >
+              <svg className="w-5 h-5 sm:w-6 sm:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15 19l-7-7 7-7" />
+              </svg>
+            </button>
+
+            {/* Right Navigation Arrow */}
+            <button
+              onClick={() => scrollSlider('right')}
+              className={`absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 z-40 w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 bg-black/80 hover:bg-black rounded-full flex items-center justify-center transition-all duration-300 shadow-2xl border border-white/10
+                ${canScrollRight ? 'opacity-0 group-hover/slider:opacity-100' : 'opacity-0 pointer-events-none'}`}
+              aria-label="Scroll right"
+            >
+              <svg className="w-5 h-5 sm:w-6 sm:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" />
+              </svg>
+            </button>
+
+            {/* Slider Track */}
+            <div
+              ref={sliderRef}
+              className="flex gap-3 sm:gap-4 md:gap-5 overflow-x-auto scrollbar-hide px-4 sm:px-8 md:px-12 lg:px-16 pb-4 scroll-smooth"
+              style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+            >
             {testimonials.map((testimonial, index) => {
               const videoSrc = getVideoStreamUrl(testimonial.videoUrl);
               const hasVideo = videoSrc !== null;
@@ -387,7 +467,7 @@ export default function Home() {
                     }
                   }}
                   data-testimonial-id={testimonial.id}
-                  className={`group relative ${themeClasses.cardBg} ${themeClasses.cardBorder} border rounded-xl overflow-hidden ${themeClasses.shadowHover} transition-all duration-500 active:scale-[0.98] sm:hover:scale-[1.02] sm:hover:shadow-2xl`}
+                  className={`group relative flex-shrink-0 w-[200px] sm:w-[240px] md:w-[280px] lg:w-[320px] ${themeClasses.cardBg} ${themeClasses.cardBorder} border rounded-xl overflow-hidden transition-all duration-500 hover:scale-105 hover:z-10 hover:shadow-2xl hover:shadow-purple-500/20`}
                 >
                   {/* Video Container - Vertical/Portrait */}
                   <div className="relative w-full aspect-[9/16] bg-black">
@@ -396,6 +476,7 @@ export default function Home() {
                         <div className="relative w-full h-full z-0 video-controls-subtle">
                           <VideoPlayer
                             src={videoSrc}
+                            poster={testimonial.thumbnail}
                             title={testimonial.name}
                             aspectRatio="portrait"
                             muted={false}
@@ -479,6 +560,7 @@ export default function Home() {
                 </div>
               );
             })}
+            </div>
           </div>
         </div>
       </section>

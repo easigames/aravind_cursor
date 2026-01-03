@@ -157,7 +157,7 @@ export default function TermsPage() {
                     If you have questions about these Terms, please contact us at:
                   </p>
                   <p className={`${themeClasses.textSecondary} text-sm sm:text-base leading-relaxed`}>
-                    Email: <a href="mailto:arvind.sri2025@gmail.com" className={`${themeClasses.gradientText} hover:underline`}>arvind.sri2025@gmail.com</a>
+                    Email: <a href="mailto:thearvedit@gmail.com" className={`${themeClasses.gradientText} hover:underline`}>thearvedit@gmail.com</a>
                   </p>
                 </div>
 

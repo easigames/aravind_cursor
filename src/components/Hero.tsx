@@ -15,6 +15,7 @@ export default function Hero() {
   const { themeClasses } = useTheme();
   const [floatPositions, setFloatPositions] = useState<FloatPosition[]>([]);
   const [isClient, setIsClient] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(false);
   const videoContainerRef = useRef<HTMLDivElement>(null);
   const heroVideoRef = useRef<HTMLVideoElement | null>(null);
   const wasPlayingRef = useRef(false);
@@ -22,6 +23,16 @@ export default function Hero() {
   // Callback to get video element reference
   const setHeroVideoRef = useCallback((element: HTMLVideoElement | null) => {
     heroVideoRef.current = element;
+  }, []);
+
+  // Handle video play
+  const handleVideoPlay = useCallback(() => {
+    setIsPlaying(true);
+  }, []);
+
+  // Handle video pause
+  const handleVideoPause = useCallback(() => {
+    setIsPlaying(false);
   }, []);
 
   // Generate random positions only on client side to avoid hydration mismatch
@@ -203,7 +214,9 @@ export default function Hero() {
                 </span>
               </Link>
               <Link
-                href="/contact#book-call"
+                href="https://calendly.com/arvedit"
+                target="_blank"
+                rel="noopener noreferrer"
                 className={`group relative w-full sm:w-auto px-6 py-3 sm:py-2.5 min-h-[48px] sm:min-h-0 rounded-full text-sm font-semibold transition-all duration-300 active:scale-95 sm:hover:scale-105 overflow-hidden bg-gradient-to-r from-green-600 to-emerald-600 text-white hover:from-green-700 hover:to-emerald-700 shadow-lg hover:shadow-xl flex items-center justify-center`}
               >
                 <span className="relative flex items-center">
@@ -289,19 +302,56 @@ export default function Hero() {
               {/* Video Player */}
               <div 
                 ref={videoContainerRef}
-                className={`relative aspect-video ${themeClasses.cardBg} rounded-xl sm:rounded-2xl overflow-hidden border sm:border-2 ${themeClasses.cardBorder} shadow-lg sm:shadow-xl`}
+                className={`group relative aspect-video ${themeClasses.cardBg} rounded-xl sm:rounded-2xl overflow-hidden border sm:border-2 ${themeClasses.cardBorder} shadow-lg sm:shadow-xl`}
               >
-                <VideoPlayer
-                  src="/api/video/arvedit_homepage.mp4"
-                  title="ArvEdit Demo"
-                  aspectRatio="video"
-                  muted={false}
-                  loop
-                  controls={true}
-                  preload="metadata"
-                  className="w-full h-full rounded-xl sm:rounded-2xl"
-                  setVideoRef={setHeroVideoRef}
-                />
+                <div className="relative w-full h-full">
+                  <VideoPlayer
+                    src="/api/video/arvedit_homepage.mp4"
+                    title="ArvEdit Demo"
+                    aspectRatio="video"
+                    muted={false}
+                    loop
+                    controls={true}
+                    preload="metadata"
+                    className="w-full h-full rounded-xl sm:rounded-2xl"
+                    setVideoRef={setHeroVideoRef}
+                    onPlay={handleVideoPlay}
+                    onPause={handleVideoPause}
+                  />
+                </div>
+
+                {/* Play/Pause Button - Only visible on hover */}
+                <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-30 pointer-events-none">
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      const video = heroVideoRef.current;
+                      if (video) {
+                        if (video.paused) {
+                          handleVideoPlay();
+                          video.play().catch(() => {});
+                        } else {
+                          video.pause();
+                          handleVideoPause();
+                        }
+                      }
+                    }}
+                    className="pointer-events-auto w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20 min-w-[56px] min-h-[56px] bg-black/60 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-black/80 active:scale-95 transition-all duration-200 shadow-xl"
+                    aria-label={isPlaying ? 'Pause video' : 'Play video'}
+                  >
+                    {isPlaying ? (
+                      // Pause icon
+                      <svg className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 text-white" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zM7 8a1 1 0 012 0v4a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v4a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
+                      </svg>
+                    ) : (
+                      // Play icon
+                      <svg className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 text-white ml-0.5" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z" />
+                      </svg>
+                    )}
+                  </button>
+                </div>
               </div>
 
               {/* Floating Elements - Smaller on mobile */}
