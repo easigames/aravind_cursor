@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { useTheme } from '@/components/ThemeProvider';
@@ -51,7 +52,7 @@ export default function AboutPage() {
                     </svg>
                   </div>
                   <h3 className={`text-2xl sm:text-3xl font-bold ${themeClasses.textPrimary}`}>
-                    Meet Your Video Editors
+                    Meet the Team
                   </h3>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 max-w-5xl mx-auto">
@@ -63,14 +64,16 @@ export default function AboutPage() {
                         <div className={`w-full h-full ${themeClasses.cardBg} rounded-full`}></div>
                       </div>
                       {/* Photo placeholder - replace with real headshot */}
-                      <img
+                      <Image
                         src="/images/arvind_pic.jpeg"
                         alt="Arvind Srinivasaraghavan"
+                        width={160}
+                        height={160}
                         className="absolute inset-1 w-[calc(100%-8px)] h-[calc(100%-8px)] rounded-full object-cover"
-                        onError={(e) => {
-                          const target = e.target as HTMLImageElement;
-                          target.src = 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop&crop=face';
-                        }}
+                        loading="eager"
+                        fetchPriority="high"
+                        quality={90}
+                        unoptimized={false}
                       />
                       {/* Online indicator */}
                       <div className="absolute bottom-1.5 sm:bottom-2 right-1.5 sm:right-2 w-3.5 h-3.5 sm:w-4 sm:h-4 bg-green-400 rounded-full border-2 border-white animate-pulse"></div>
@@ -102,14 +105,16 @@ export default function AboutPage() {
                         <div className={`w-full h-full ${themeClasses.cardBg} rounded-full`}></div>
                       </div>
                       {/* Photo placeholder - replace with real headshot */}
-                      <img
+                      <Image
                         src="/images/chris_pic.jpeg"
                         alt="Chris Vinh"
+                        width={160}
+                        height={160}
                         className="absolute inset-1 w-[calc(100%-8px)] h-[calc(100%-8px)] rounded-full object-cover"
-                        onError={(e) => {
-                          const target = e.target as HTMLImageElement;
-                          target.src = 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&h=400&fit=crop&crop=face';
-                        }}
+                        loading="eager"
+                        fetchPriority="high"
+                        quality={90}
+                        unoptimized={false}
                       />
                       {/* Online indicator */}
                       <div className="absolute bottom-1.5 sm:bottom-2 right-1.5 sm:right-2 w-3.5 h-3.5 sm:w-4 sm:h-4 bg-green-400 rounded-full border-2 border-white animate-pulse"></div>
@@ -142,20 +147,22 @@ export default function AboutPage() {
                         <div className={`w-full h-full ${themeClasses.cardBg} rounded-full`}></div>
                       </div>
                       {/* Photo placeholder - replace with real headshot */}
-                      <img
+                      <Image
                         src="/images/jordan.jpeg"
                         alt="Jordan Rogers"
+                        width={160}
+                        height={160}
                         className="absolute inset-1 w-[calc(100%-8px)] h-[calc(100%-8px)] rounded-full object-cover"
-                        onError={(e) => {
-                          const target = e.target as HTMLImageElement;
-                          target.src = 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop&crop=face';
-                        }}
+                        loading="eager"
+                        fetchPriority="high"
+                        quality={90}
+                        unoptimized={false}
                       />
                       {/* Online indicator */}
                       <div className="absolute bottom-1.5 sm:bottom-2 right-1.5 sm:right-2 w-3.5 h-3.5 sm:w-4 sm:h-4 bg-green-400 rounded-full border-2 border-white animate-pulse"></div>
                     </div>
                     <h4 className={`text-lg sm:text-xl md:text-2xl font-bold ${themeClasses.textPrimary} mb-1 sm:mb-2`}>
-                      Jordan Rogers< br />
+                      Jordan Rogers
                     </h4>
                     <p className={`${themeClasses.gradientText} font-semibold mb-2 sm:mb-3 text-sm sm:text-base`}>
                       Marketing
