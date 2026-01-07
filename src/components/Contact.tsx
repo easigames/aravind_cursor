@@ -71,7 +71,7 @@ export default function Contact() {
         {/* Section Header - SEO Optimized */}
         <div className="text-center max-w-3xl mx-auto mb-8 sm:mb-12 md:mb-16">
           <h1 className={`text-3xl sm:text-4xl md:text-5xl font-bold ${themeClasses.textPrimary} mb-3 sm:mb-4`}>
-            Contact Professional Video Editing Services
+            Professional Video Editing Services
           </h1>
           <h2 className={`text-2xl sm:text-3xl font-semibold ${themeClasses.textPrimary} mb-3 sm:mb-4`}>
             Let's Create Something Amazing

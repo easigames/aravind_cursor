@@ -22,7 +22,14 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    const savedTheme = localStorage.getItem('theme') as ThemeName | null;
+    let savedTheme: ThemeName | null = null;
+    
+    // Safely access localStorage (may fail in private browsing)
+    try {
+      savedTheme = localStorage.getItem('theme') as ThemeName | null;
+    } catch (error) {
+      console.warn('localStorage not available:', error);
+    }
     
     // Default to dark mode if no saved theme
     const initialTheme = savedTheme || 'dark';
@@ -34,7 +41,13 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   const applyTheme = (newTheme: ThemeName) => {
     const root = document.documentElement;
     root.setAttribute('data-theme', newTheme);
-    localStorage.setItem('theme', newTheme);
+    
+    // Safely save to localStorage (may fail in private browsing)
+    try {
+      localStorage.setItem('theme', newTheme);
+    } catch (error) {
+      console.warn('Failed to save theme to localStorage:', error);
+    }
     
     // Update CSS classes on body
     if (newTheme === 'dark') {

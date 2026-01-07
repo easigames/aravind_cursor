@@ -106,7 +106,7 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/faq" className={`${themeClasses.footerLink} transition-colors text-xs sm:text-sm lg:text-base py-1.5 sm:py-2 inline-block`}>
+                <Link href="/pricing#faq" className={`${themeClasses.footerLink} transition-colors text-xs sm:text-sm lg:text-base py-1.5 sm:py-2 inline-block`}>
                   FAQ
                 </Link>
               </li>

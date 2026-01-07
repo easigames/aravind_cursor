@@ -51,6 +51,35 @@ export default function Hero() {
     const videoContainer = videoContainerRef.current;
     if (!videoContainer) return;
 
+    // Check if Intersection Observer is supported
+    if (typeof IntersectionObserver === 'undefined') {
+      // Fallback: Use scroll event for older browsers
+      const handleScroll = () => {
+        const video = heroVideoRef.current;
+        if (!video) return;
+        
+        const rect = videoContainer.getBoundingClientRect();
+        const isVisible = rect.top < window.innerHeight && rect.bottom > 0;
+        
+        if (isVisible) {
+          if (wasPlayingRef.current && video.paused) {
+            video.play().catch(() => {});
+          }
+        } else {
+          wasPlayingRef.current = !video.paused;
+          video.pause();
+        }
+      };
+      
+      window.addEventListener('scroll', handleScroll, { passive: true });
+      handleScroll(); // Check initial state
+      
+      return () => {
+        window.removeEventListener('scroll', handleScroll);
+      };
+    }
+
+    // Use Intersection Observer for modern browsers
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {

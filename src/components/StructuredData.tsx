@@ -176,3 +176,4 @@ export default function StructuredData({ type = 'organization', data }: Structur
   );
 }
 
+

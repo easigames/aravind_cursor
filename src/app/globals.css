@@ -47,17 +47,42 @@ html {
   scroll-behavior: smooth;
 }
 
+/* Fallback for browsers without smooth scroll support */
+@supports not (scroll-behavior: smooth) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
 /* Glass Effect */
 .glass-effect {
   background: rgba(255, 255, 255, 0.05);
+  /* Fallback for browsers that don't support backdrop-filter */
+  background: rgba(255, 255, 255, 0.15);
+  /* Modern browsers with backdrop-filter support */
   backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px); /* Safari support */
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .glass-effect-dark {
   background: rgba(15, 17, 25, 0.8);
+  /* Fallback for browsers that don't support backdrop-filter */
+  background: rgba(15, 17, 25, 0.95);
+  /* Modern browsers with backdrop-filter support */
   backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px); /* Safari support */
   border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* Fallback for browsers without backdrop-filter support */
+@supports not (backdrop-filter: blur(10px)) {
+  .glass-effect {
+    background: rgba(255, 255, 255, 0.15);
+  }
+  .glass-effect-dark {
+    background: rgba(15, 17, 25, 0.95);
+  }
 }
 
 /* Custom Animations */
@@ -232,6 +257,19 @@ html, body {
   /* Disable hover effects on touch devices */
   .hover-effect:hover {
     transform: none !important;
+  }
+  
+  /* Make hover effects work on touch - show on first tap */
+  .group:hover,
+  .group-hover\:opacity-100:hover,
+  .group-hover\:scale-105:hover,
+  .group-hover\:translate-y-0:hover {
+    /* These will be handled via JavaScript for touch devices */
+  }
+  
+  /* Ensure interactive elements are visible on touch */
+  button, a, [role="button"], [onclick] {
+    cursor: pointer;
   }
 }
 

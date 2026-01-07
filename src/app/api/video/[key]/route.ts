@@ -57,7 +57,7 @@ export async function GET(
     
     // Stream the video with Range support (pass null if no range header for full stream)
     // Add timeout protection
-    const timeoutPromise = new Promise((_, reject) => 
+    const timeoutPromise = new Promise<never>((_, reject) => 
       setTimeout(() => reject(new Error('Request timeout')), 25000)
     );
     
@@ -67,7 +67,7 @@ export async function GET(
     ]).catch((error) => {
       console.error('Video streaming error:', error);
       return null;
-    });
+    }) as Awaited<ReturnType<typeof streamVideo>> | null;
     
     if (!streamResult || !streamResult.body) {
       return NextResponse.json(
